@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kyodoapp/iconAsset.dart';
 import 'package:kyodoapp/main.dart';
 import 'dataViewModel.dart';
 import 'dataDefine.dart';
@@ -101,7 +102,6 @@ class GyoshaListView extends ConsumerWidget{
             duration: const Duration(milliseconds: 500),
             curve: Curves.linear,
           );
-
         },
         child: const Icon(Icons.add),
       ),
@@ -176,7 +176,7 @@ class GyoshaMainDataRow extends ConsumerWidget{
             ],
           ),
         ),
-        /*
+
         PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           offset: const Offset(50,50),
@@ -196,7 +196,7 @@ class GyoshaMainDataRow extends ConsumerWidget{
             ),
           ],
         ),
-        */
+
       ],
     );
   }
@@ -205,6 +205,74 @@ class GyoshaMainDataRow extends ConsumerWidget{
 class GyoshaDetailExpansionTile extends ConsumerWidget{
   int index;
   GyoshaDetailExpansionTile(this.index, {Key? key}) : super(key: key);
+
+  String getTekichuResultString(GyoshaData gyoshaData,){
+    String tekichu = gyoshaData.totalSha != 0 ? gyoshaData.totalTekichu.toString() : "-";
+    String total = gyoshaData.totalSha != 0 ? gyoshaData.totalSha.toString() : "-";
+    String tekichuRate = gyoshaData.totalSha != 0 ? (100*gyoshaData.totalTekichu/gyoshaData.totalSha).toStringAsFixed(1) : "-";
+    return "$tekichu本/$total本($tekichuRate%)";
+  }
+  String getRenshuTime(GyoshaData gyoshaData){
+    String hour = gyoshaData.renshuHour.toString();
+    String minutes = gyoshaData.renshuMinutes.toString();
+    return '$hour時間$minutes分';
+  }
+
+  Widget getScoreData(GyoshaData gyoshaData){
+    List<Widget> outTexts = [];
+    List<TableRow> tableRows = [];
+
+
+    for (SankashaData sankashaData in gyoshaData.sankashaList){
+      String outString = "";
+      List<TachiData> userTachiList =  gyoshaData.collectUserTachiData(sankashaData.sankashaID);
+      for(TachiData tachiData in userTachiList){
+        for(ShaData shaData in tachiData.shaList){
+          outString+= shaResultString[shaData.shaResult].toString();
+        }
+      }
+
+      int totalSha = gyoshaData.countUserShaTotal(sankashaData.sankashaID);
+      int atariSha = gyoshaData.countUserAtariTotal(sankashaData.sankashaID);
+      String tekichu = totalSha != 0 ? atariSha.toString() : "-";
+      String total = totalSha != 0 ? totalSha.toString() : "-";
+      String tekichuRate = totalSha != 0 ? (100*atariSha/totalSha).toStringAsFixed(1) : "-";
+      String data = "$tekichu本/$total本($tekichuRate%)";
+
+      tableRows.add(TableRow(
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(sankashaData.sankashaName),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(outString),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Text(data),
+          ),
+        ]
+      ));
+
+    }
+
+    return Table(
+      columnWidths: const <int, TableColumnWidth>{
+        0: IntrinsicColumnWidth(),
+        1: FlexColumnWidth(),
+        2: FixedColumnWidth(64),
+      },
+      children: [...tableRows],
+    );
+
+
+    //return Column(
+   //   children: [...outTexts],
+   // );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
@@ -213,14 +281,14 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
     return ExpansionTile(
       title: Row(
         children: [
-          Text('${gyoshaDataList[index].countAppUserAtariTotal()}/${gyoshaDataList[index].countAppUserShaTotal()}的中',
+          Text(getTekichuResultString(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Theme.of(context).primaryColor,
             ),
           ),
-          Text('${(gyoshaDataList[index].renshuHour+gyoshaDataList[index].renshuMinutes/60).toStringAsFixed(1)}時間',
+          Text(getRenshuTime(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
@@ -231,14 +299,9 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
       ),
       children: <Widget>[
         Container(
-            child: Text('ここに結果詳細をかく',
-              style: TextStyle(
-              fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Theme.of(context).primaryColor,
-              ),
+            child:
+            getScoreData(gyoshaData),
             ),
-        ),
       ],
     );
   }

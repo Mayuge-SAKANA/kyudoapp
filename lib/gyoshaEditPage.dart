@@ -5,6 +5,7 @@ import 'package:kyodoapp/dataDefine.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyodoapp/main.dart';
 import 'sankashaEditPage.dart';
+import 'iconAsset.dart';
 
 
 class GyoshaEditPage extends ConsumerWidget{
@@ -204,16 +205,6 @@ class GyoshaSliverReorderableListView extends ConsumerStatefulWidget{
 }
 class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorderableListView> {
   double iconSize = 30;
-
-  Map<ShaResultType, Icon> shaResultMap = {
-    ShaResultType.atari: const Icon(Icons.panorama_fish_eye),
-    ShaResultType.hazure: const Icon(Icons.clear),
-    ShaResultType.shitsu: const Icon(Icons.subdirectory_arrow_right),
-    ShaResultType.fumei: const Icon(Icons.question_mark),
-    ShaResultType.nashi: const Icon(Icons.minimize),
-    ShaResultType.delete: const Icon(Icons.delete),
-  };
-
   @override
   Widget build(BuildContext context) {
     GyoshaData editingGyoshaData = ref.watch(gyoshaDatasProvider).editingGyoshaData;

@@ -65,6 +65,8 @@ class GyoshaData extends DataAbstClass {
   String get finishDateTimeStr => dateTimeToString(finishDateTime); //終了時間
   int get renshuHour => calcGyoshaTime().inHours;
   int get renshuMinutes => calcGyoshaTime().inMinutes - renshuHour*60;
+  int get totalTekichu =>countUserAtariTotal(appUserID);
+  int get totalSha =>countUserShaTotal(appUserID);
 
   final List<String> _editorList = []; //編集者リスト
   final List<TachiData> tachiList = []; //立集合
@@ -161,30 +163,40 @@ class GyoshaData extends DataAbstClass {
     return shaTotal;
   }
 
-  int countAppUserAtariTotal(){
+  int countUserAtariTotal(String sankashaID){
     int atariTotal = 0;
-    if(appUserID==""){
+    if(sankashaID==""){
       return 0;
     }
     for(TachiData tachiData in tachiList){
-      if(tachiData.sankashaData!=null && tachiData.sankashaData!.sankashaID==appUserID) {
+      if(tachiData.sankashaData!=null && tachiData.sankashaData!.sankashaID==sankashaID) {
         atariTotal += tachiData.atariShaNum;
       }
     }
     return atariTotal;
   }
 
-  int countAppUserShaTotal(){
+  int countUserShaTotal(String sankashaID){
     int shaTotal = 0;
-    if(appUserID==""){
+    if(sankashaID==""){
       return 0;
     }
     for(TachiData tachiData in tachiList){
-      if(tachiData.sankashaData!=null && tachiData.sankashaData!.sankashaID==appUserID) {
+      if(tachiData.sankashaData!=null && tachiData.sankashaData!.sankashaID==sankashaID) {
         shaTotal += tachiData.totalShaNum;
       }
     }
     return shaTotal;
+  }
+
+  List<TachiData> collectUserTachiData(String sankashaID){
+    List<TachiData> userTachi = [];
+    for(TachiData tachiData in tachiList) {
+      if (tachiData.sankashaData != null && tachiData.sankashaData!.sankashaID == sankashaID) {
+       userTachi.add(tachiData);
+      }
+    }
+    return userTachi;
   }
 
   Duration calcGyoshaTime(){
