@@ -140,12 +140,16 @@ class GyoshaData extends DataAbstClass {
 
   GyoshaData(this.mainEditorName, this.gyoshaName,
       this.gyoshaType, this.startDateTime,this.finishDateTime,
-      {this.memoText = '',this.gyoshaState = GyoshaState.offline, }):
+      {this.memoText = '',this.gyoshaState = GyoshaState.offline, bool initInstanceNum = false, int startInstanceNum = 0}):
       gyoshaID=generateID('G',_gyoshaInstanceNumber+1)
     {
       appUserData = addSankasha(mainEditorName,isAppUser:true);
       appUserID = appUserData!.sankashaID;
       _gyoshaInstanceNumber++;
+      if(initInstanceNum==true){
+        _gyoshaInstanceNumber = startInstanceNum;
+      }
+
     }
 
   SankashaData addSankasha(String newSankashaName,{bool isAppUser=false}){
@@ -157,14 +161,12 @@ class GyoshaData extends DataAbstClass {
     sankashaList.add(newSankasha);
     return newSankasha;
   }
-
   void removeSankashaAt(index){
     if(sankashaList[index].isAppUser==true){
       isAppUserIsSankasha=false;
     }
     sankashaList.removeAt(index);
   }
-
   void deleteAppUserData(){
     for(int i=tachiList.length-1;i>-1;i--){
       if(tachiList[i].sankashaData!=null &&tachiList[i].sankashaData!.sankashaID ==appUserID){
@@ -185,7 +187,6 @@ class GyoshaData extends DataAbstClass {
     }
     isAppUserIsSankasha = true;
   }
-
   void addTachi({int tachiJun = 1 ,bool addAll = true}){
     if(addAll==true){
       for(SankashaData sankashaData in sankashaList){
@@ -203,11 +204,9 @@ class GyoshaData extends DataAbstClass {
       tachiList.add(tachiData);
     }
   }
-
   void removeTachiAt(int index){
     tachiList.removeAt(index);
   }
-
   int countAtariTotal(){
     int atariTotal = 0;
     for(TachiData tachiData in tachiList){
@@ -215,7 +214,6 @@ class GyoshaData extends DataAbstClass {
     }
     return atariTotal;
   }
-
   int countShaTotal(){
     int shaTotal = 0;
     for(TachiData tachiData in tachiList){
@@ -223,7 +221,6 @@ class GyoshaData extends DataAbstClass {
     }
     return shaTotal;
   }
-
   int countUserAtariTotal(String sankashaID){
     int atariTotal = 0;
     if(sankashaID==""){
@@ -236,7 +233,6 @@ class GyoshaData extends DataAbstClass {
     }
     return atariTotal;
   }
-
   int countUserShaTotal(String sankashaID){
     int shaTotal = 0;
     if(sankashaID==""){
@@ -249,7 +245,6 @@ class GyoshaData extends DataAbstClass {
     }
     return shaTotal;
   }
-
   List<TachiData> collectUserTachiData(String sankashaID){
     List<TachiData> userTachi = [];
     for(TachiData tachiData in tachiList) {
@@ -259,7 +254,6 @@ class GyoshaData extends DataAbstClass {
     }
     return userTachi;
   }
-
   Duration calcGyoshaTime(){
     Duration diff = finishDateTime.difference(startDateTime);
     return diff;
@@ -268,23 +262,37 @@ class GyoshaData extends DataAbstClass {
   @override
   Map<String, dynamic> toMap() {
     return {
-      'gyoshaID': gyoshaID, //行射固有ID
-      'mainEditorName': mainEditorName, // 編集者名
-      'gyoshaName': gyoshaName, //行射タイトル
-      'gyoshaType': gyoshaType.index, //行射種類
-      'startDateTime': startDateTime, //開始時間
-      'finishDateTime': finishDateTime, //終了時間
-      'memoText': memoText, //メモ内容
+    'savedInstanceNum':_gyoshaInstanceNumber,
+    'gyoshaID': gyoshaID, //行射固有ID
+    'mainEditorName': mainEditorName, // 編集者名
+    'gyoshaState':gyoshaState.index, //オンラインオフライン
+    'gyoshaName': gyoshaName,//行射タイトル
+    'gyoshaType': gyoshaType.index, //行射種類
+    'startYear':startDateTime.year,//開始時間
+    'startMonth':startDateTime.month,//開始時間
+    'startDay':startDateTime.day,//開始時間
+    'startHour':startDateTime.hour,//開始時間
+    'startMinute':startDateTime.minute,//開始時間
+    'finishYear':finishDateTime.year,//終了時間
+    'finishMonth':finishDateTime.month,//終了時間
+    'finishDay':finishDateTime.day,//終了時間
+    'finishHour':finishDateTime.hour,//終了時間
+    'finishMinute':finishDateTime.minute,//終了時間
+    'memoText':memoText,//メモ内容
+    'isAppUserIsSankasha':isAppUserIsSankasha,//ユーザーが射に参加しているかどうか
+    'appUserID': appUserID,
+    'tachiInstanceNumber' : _tachiInstanceNumber,
+    'sankashaInstanceNumber' : _sankashaInstanceNumber,
     };
   }
 }
 
 class TachiData extends DataAbstClass {
   final String tachiID; //立固有ID
-
   int? tachiJun; //立ち順(大前など)
   int tachiNumber; //練習中何番目の立ちか
   final String gyoshaID; //行射固有ID
+  int _shaInstanceNumber = 0;
   final List<ShaData> shaList = []; //射集合
   SankashaData? sankashaData;
 
@@ -293,7 +301,7 @@ class TachiData extends DataAbstClass {
 
   int get totalShaNum => shaList.length;
   int get atariShaNum => countAtariSha();
-  int _shaInstanceNumber = 0;
+
 
   TachiData(this.tachiID,  this.gyoshaID,{this.sankashaData,this.tachiJun = 0,this.tachiNumber = 0});
 
@@ -315,11 +323,11 @@ class TachiData extends DataAbstClass {
   @override
   Map<String, dynamic> toMap() {
     return {
-      'tachiID': tachiID, //立固有ID
-      'iteName': iteName, //射手名
-      'tachiNumber' : tachiNumber,//立ち順(大前など)
-      'tachiJun' : tachiJun,//立ち順(大前など)
-      'gyoshaID': gyoshaID,//行射固有ID
+    'tachiID': tachiID, //立固有ID
+    'tachiJun': tachiJun ?? -1, //立ち順(大前など)
+    'tachiNumber': tachiNumber, //練習中何番目の立ちか
+    'gyoshaID': gyoshaID, //行射固有ID
+    'shaInstanceNumber': _shaInstanceNumber,
     };
   }
 }
@@ -329,6 +337,7 @@ class ShaData extends DataAbstClass{
   final int shaNumber; //矢が何本目か
   ShaResultType shaResult; //的中結果
   final String tachiID; //立固有ID
+
   ShaData(this.shaID,this.shaNumber,this.shaResult,this.tachiID);
 
   @override
@@ -354,11 +363,11 @@ class SankashaData extends DataAbstClass{
   @override
   Map<String, dynamic> toMap() {
     return {
-      'sankashaID':sankashaID,
-      'gyoshaID':gyoshaID,
-      'isAppUser':isAppUser,
-      'sankashaName':sankashaName,
-      'sankashaViewName':sankashaViewName,
+    'sankashaID': sankashaID,
+    'gyoshaID': gyoshaID,
+    'sankashaName': sankashaName,
+    'sankashaViewName':sankashaViewName,
+    'isAppUser': isAppUser,
     };
     }
 }

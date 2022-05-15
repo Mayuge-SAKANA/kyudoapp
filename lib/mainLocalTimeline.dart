@@ -41,6 +41,12 @@ class DrawerMenu extends StatelessWidget {
             child: Text("Drawer Header"),
           ),
           ListTile(
+            title: const Text("プロフィール"),
+            onTap: (){
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
             title: const Text("タイムライン"),
             onTap: (){
               Navigator.pop(context);
@@ -75,17 +81,8 @@ class GyoshaListView extends ConsumerWidget{
           itemBuilder:(context, index) {
             var gyoshaData = gyoshaDataList[index];
             return
-              GestureDetector(
-                onTap: () async {
-                  ref.read(gyoshaDatasProvider.notifier).setEditingGyoshaData(index);
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context){
-                        return const GyoshaEditPage();
-                      })
-                  );
-                },
-                child: GyoshaCard(index),
-              );
+             GyoshaCard(index);
+
           }
       ),
 
@@ -93,7 +90,7 @@ class GyoshaListView extends ConsumerWidget{
         onPressed: () {
           DateTime startTime = DateTime.now();
           String initialGyoshaName = "今日の行射";
-          var gyoshaData = GyoshaData("太刀魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
+          var gyoshaData = GyoshaData("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
           gyoshaData.addTachi();
           ref.read(gyoshaDatasProvider.notifier).addGyoshaData(gyoshaData);
 
@@ -109,9 +106,10 @@ class GyoshaListView extends ConsumerWidget{
   }
 }
 
+@immutable
 class GyoshaCard extends ConsumerWidget{
-  int index;
-  GyoshaCard(this.index,{Key? key}) : super(key: key);
+  final int index;
+  const GyoshaCard(this.index,{Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref){
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
@@ -120,7 +118,18 @@ class GyoshaCard extends ConsumerWidget{
     return Card(
         child: Column(
           children: [
-            GyoshaMainDataRow(index),
+            GestureDetector(
+            onTap: () async {
+                ref.read(gyoshaDatasProvider.notifier).setEditingGyoshaData(index);
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context){
+                  return const GyoshaEditPage();
+                  })
+                );
+                },
+              child:
+               GyoshaMainDataRow(index),
+                ),
             GyoshaDetailExpansionTile(index),
           ],
         ),
@@ -128,9 +137,10 @@ class GyoshaCard extends ConsumerWidget{
   }
 }
 
+@immutable
 class GyoshaMainDataRow extends ConsumerWidget{
-  int index;
-  GyoshaMainDataRow(this.index, {Key? key}) : super(key: key);
+  final int index;
+  const GyoshaMainDataRow(this.index, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref){
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
@@ -236,7 +246,8 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
       String tekichu = sankashaResultData.totalSha != 0 ? sankashaResultData.atariSha.toString() : "-";
       String total = sankashaResultData.totalSha != 0 ? sankashaResultData.totalSha.toString() : "-";
       String tekichuRate = sankashaResultData.totalSha != 0 ? (100*sankashaResultData.tekichuRate).toStringAsFixed(1) : "-";
-      String data = "$tekichu本/$total本($tekichuRate%)";
+      String data = "$tekichu本/$total本";
+      String rate = "($tekichuRate%)";
       String rank = shakaiData.rankingMap[sankashaData.sankashaID].toString();
 
       tableRows.add(TableRow(
@@ -257,7 +268,11 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
           ),
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(data),
+            child: Column(children: [
+              Text(data),
+              Text(rate),
+            ],),
+
           ),
         ]
       ));
@@ -265,7 +280,7 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
     }
     return Table(
       columnWidths: const <int, TableColumnWidth>{
-        0: FixedColumnWidth(72),
+        0: FixedColumnWidth(80),
         1: FlexColumnWidth(),
         2: FixedColumnWidth(64),
       },

@@ -18,6 +18,12 @@ class GyoshaEditPage extends ConsumerWidget{
     return Scaffold(
       appBar: AppBar(
         title: const Text('行射記録'),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.text_snippet),
+          ),
+        ],
       ),
       body:
       CustomScrollView(
@@ -80,6 +86,7 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
       delegate: SliverChildListDelegate(
         [
           TextFormField(
+            decoration: const InputDecoration(hintText: 'タイトルを入力'),
             controller: TextEditingController.fromValue(
               TextEditingValue(
                 text: editingGyoshaData.gyoshaName,
@@ -192,6 +199,7 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
               ),
             ],
           ),
+
         ]
       ),
     );
