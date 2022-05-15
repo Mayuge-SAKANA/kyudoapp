@@ -153,8 +153,8 @@ class GyoshaMainDataRow extends ConsumerWidget{
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
-                Text(gyoshaData.startDateTime.hour.toString().padLeft(2,'0')+":"+gyoshaData.startDateTime.day.toString().padLeft(2,'0')+
-                    "-"+gyoshaData.finishDateTime.hour.toString().padLeft(2,'0')+":"+gyoshaData.finishDateTime.day.toString().padLeft(2,'0')
+                Text(gyoshaData.startDateTime.hour.toString().padLeft(2,'0')+":"+gyoshaData.startDateTime.minute.toString().padLeft(2,'0')+
+                    "-"+gyoshaData.finishDateTime.hour.toString().padLeft(2,'0')+":"+gyoshaData.finishDateTime.minute.toString().padLeft(2,'0')
                 )
               ],
             ),
@@ -205,49 +205,55 @@ class GyoshaMainDataRow extends ConsumerWidget{
 class GyoshaDetailExpansionTile extends ConsumerWidget{
   int index;
   GyoshaDetailExpansionTile(this.index, {Key? key}) : super(key: key);
-
-  String getTekichuResultString(GyoshaData gyoshaData,){
+  Map<String, double> junniMap = {};
+  String _getTekichuResultString(GyoshaData gyoshaData,){
     String tekichu = gyoshaData.totalSha != 0 ? gyoshaData.totalTekichu.toString() : "-";
     String total = gyoshaData.totalSha != 0 ? gyoshaData.totalSha.toString() : "-";
     String tekichuRate = gyoshaData.totalSha != 0 ? (100*gyoshaData.totalTekichu/gyoshaData.totalSha).toStringAsFixed(1) : "-";
     return "$tekichu本/$total本($tekichuRate%)";
   }
-  String getRenshuTime(GyoshaData gyoshaData){
+  String _getRenshuTime(GyoshaData gyoshaData){
     String hour = gyoshaData.renshuHour.toString();
-    String minutes = gyoshaData.renshuMinutes.toString();
+    String minutes = (gyoshaData.renshuMinutes%60).toString();
     return '$hour時間$minutes分';
   }
+  Widget _scoreDataWidget(GyoshaData gyoshaData) {
+    ShakaiResultDataObj shakaiData = ShakaiResultDataObj(gyoshaData);
 
-  Widget getScoreData(GyoshaData gyoshaData){
-    List<Widget> outTexts = [];
+
     List<TableRow> tableRows = [];
-
-
     for (SankashaData sankashaData in gyoshaData.sankashaList){
-      String outString = "";
-      List<TachiData> userTachiList =  gyoshaData.collectUserTachiData(sankashaData.sankashaID);
-      for(TachiData tachiData in userTachiList){
-        for(ShaData shaData in tachiData.shaList){
-          outString+= shaResultString[shaData.shaResult].toString();
+      SankashaResultDataObj? sankashaResultData = shakaiData.sankashaResultMap[sankashaData.sankashaID];
+      if(sankashaResultData==null)continue;
+
+      List<Widget> iconList = [];
+      for(ShaResultType result in sankashaResultData.resultList){
+        if(shaResultMap[result]!=null) {
+          iconList.add(shaResultMap[result]!);
         }
       }
 
-      int totalSha = gyoshaData.countUserShaTotal(sankashaData.sankashaID);
-      int atariSha = gyoshaData.countUserAtariTotal(sankashaData.sankashaID);
-      String tekichu = totalSha != 0 ? atariSha.toString() : "-";
-      String total = totalSha != 0 ? totalSha.toString() : "-";
-      String tekichuRate = totalSha != 0 ? (100*atariSha/totalSha).toStringAsFixed(1) : "-";
+      String tekichu = sankashaResultData.totalSha != 0 ? sankashaResultData.atariSha.toString() : "-";
+      String total = sankashaResultData.totalSha != 0 ? sankashaResultData.totalSha.toString() : "-";
+      String tekichuRate = sankashaResultData.totalSha != 0 ? (100*sankashaResultData.tekichuRate).toStringAsFixed(1) : "-";
       String data = "$tekichu本/$total本($tekichuRate%)";
+      String rank = shakaiData.rankingMap[sankashaData.sankashaID].toString();
 
       tableRows.add(TableRow(
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(sankashaData.sankashaName),
+            child: Text(rank+"位"+sankashaData.sankashaName,overflow: TextOverflow.ellipsis),
           ),
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(outString),
+            child: //Text(outString),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    children: [
+                    ...iconList,
+                  ],
+                  ),
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -257,20 +263,15 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
       ));
 
     }
-
     return Table(
       columnWidths: const <int, TableColumnWidth>{
-        0: IntrinsicColumnWidth(),
+        0: FixedColumnWidth(72),
         1: FlexColumnWidth(),
         2: FixedColumnWidth(64),
       },
       children: [...tableRows],
     );
 
-
-    //return Column(
-   //   children: [...outTexts],
-   // );
   }
 
   @override
@@ -281,14 +282,14 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
     return ExpansionTile(
       title: Row(
         children: [
-          Text(getTekichuResultString(gyoshaData),
+          Text(_getTekichuResultString(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Theme.of(context).primaryColor,
             ),
           ),
-          Text(getRenshuTime(gyoshaData),
+          Text(_getRenshuTime(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
@@ -300,7 +301,7 @@ class GyoshaDetailExpansionTile extends ConsumerWidget{
       children: <Widget>[
         Container(
             child:
-            getScoreData(gyoshaData),
+            _scoreDataWidget(gyoshaData),
             ),
       ],
     );

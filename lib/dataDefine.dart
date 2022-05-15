@@ -40,6 +40,67 @@ enum ShaResultType{
   delete,
 }
 
+class ShakaiResultDataObj{
+  final GyoshaData gyoshaData;
+  final Map<String,SankashaResultDataObj> sankashaResultMap= {};
+  final Map<String, double>scoreMap = {};
+  List<MapEntry>orderedScoreList = [];
+  final Map<String, int>rankingMap = {};
+
+  ShakaiResultDataObj(this.gyoshaData){
+    for(SankashaData sankashaData in gyoshaData.sankashaList){
+      sankashaResultMap[sankashaData.sankashaID]=SankashaResultDataObj(gyoshaData, sankashaData);
+
+      List<MapEntry> _orderData(Map<String, dynamic>maps, int
+      Function(MapEntry<String, dynamic>, MapEntry<String, dynamic>) sorter){
+        return maps.entries.toList()..sort((a, b)=> sorter(a, b));
+      }
+      orderedScoreList =_orderData(sankashaResultMap, (a, b) => (b.value as
+      SankashaResultDataObj).tekichuRate.compareTo((a.value as SankashaResultDataObj).tekichuRate));
+      int rankCounter = 1;
+      double oldScore = -100;
+      for(int i = 0;i<orderedScoreList.length;i++){
+        double newScore = orderedScoreList[i].value.tekichuRate;
+        if(oldScore-newScore>0.001){
+          rankCounter++;
+        }
+        oldScore=newScore;
+        rankingMap[orderedScoreList[i].key] = rankCounter;
+      }
+    }
+  }
+
+
+}
+
+class SankashaResultDataObj{
+  final GyoshaData gyoshaData;
+  final SankashaData sankashaData;
+  final List<ShaResultType> resultList = [];
+  int get totalSha =>gyoshaData.countUserShaTotal(sankashaData.sankashaID);
+  int get atariSha =>gyoshaData.countUserAtariTotal(sankashaData.sankashaID);
+  double get tekichuRate =>_calcTekichuRate();
+
+  SankashaResultDataObj(this.gyoshaData, this.sankashaData){
+      List<TachiData> userTachiList = gyoshaData.collectUserTachiData(
+          sankashaData.sankashaID);
+      for (TachiData tachiData in userTachiList) {
+        for (ShaData shaData in tachiData.shaList) {
+          resultList.add(shaData.shaResult);
+        }
+      }
+      int totalSha = gyoshaData.countUserShaTotal(sankashaData.sankashaID);
+      int atariSha = gyoshaData.countUserAtariTotal(sankashaData.sankashaID);
+      double tekichuRate = totalSha != 0 ? (atariSha / totalSha) : 0;
+    }
+  double _calcTekichuRate(){
+     return totalSha != 0 ? (atariSha / totalSha) : 0.0;
+  }
+
+}
+
+
+
 abstract class DataAbstClass{
   Map<String, dynamic> toMap();
 }

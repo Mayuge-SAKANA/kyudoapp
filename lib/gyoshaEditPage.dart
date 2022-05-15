@@ -159,7 +159,7 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
 
                           }, currentTime: editingGyoshaData.finishDateTime, locale: LocaleType.jp);
                     },
-                    child: Text('練習終了 ${editingGyoshaData.finishDateTime.month}/${editingGyoshaData.finishDateTime.day} ${editingGyoshaData.finishDateTime.hour}:${editingGyoshaData.finishDateTime.minute} ')
+                    child: Text('練習終了 ${editingGyoshaData.finishDateTime.month.toString().padLeft(2,'0')}/${editingGyoshaData.finishDateTime.day.toString().padLeft(2,'0')} ${editingGyoshaData.finishDateTime.hour.toString().padLeft(2,'0')}:${editingGyoshaData.finishDateTime.minute.toString().padLeft(2,'0')} ')
                 ),
               ),
               Flexible(
