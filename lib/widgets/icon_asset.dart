@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dataDefine.dart';
+import '../data/data_define.dart';
 
 Map<ShaResultType, Icon> shaResultMap = {
   ShaResultType.atari: const Icon(Icons.panorama_fish_eye),

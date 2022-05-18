@@ -19,8 +19,6 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
-  flutter_datetime_picker: ^1.5.1
-  flutter_riverpod: ^1.0.3
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
