@@ -17,7 +17,11 @@ class KyudoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kyudo App',
-      theme: ThemeData(primarySwatch: Colors.deepPurple, brightness: Brightness.light ),
+      theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+          brightness: Brightness.light,
+          useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
       home: const MainView(),
     );

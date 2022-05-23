@@ -25,7 +25,7 @@ class SankashaCardContents extends  ConsumerWidget {
           ),
           SizedBox(
             //height: 60,
-            width: 240,
+            width: 200,
             child: _DetermineSankashaListItem(index),
           ),
 

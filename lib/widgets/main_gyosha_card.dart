@@ -57,7 +57,7 @@ class GyoshaMainDataRow extends ConsumerWidget{
                 Text(gyoshaData.startDateTime.month.toString().padLeft(2)+"/"+gyoshaData.startDateTime.day.toString().padLeft(2),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 30,
+                    fontSize: 20,
                     color: Theme.of(context).primaryColor,
                   ),
                 ),

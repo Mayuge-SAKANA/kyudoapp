@@ -17,6 +17,8 @@ class GyoshaData extends DataAbstClass {
 
   int _tachiInstanceNumber = 0;
   int _sankashaInstanceNumber = 0;
+  final List<TachiData> tachiList = []; //立集合
+  final List<SankashaData> sankashaList = [];//参加者リスト
 
   String get startDateTimeStr =>dateTimeToString(startDateTime); //開始時間
   String get finishDateTimeStr => dateTimeToString(finishDateTime); //終了時間
@@ -25,14 +27,8 @@ class GyoshaData extends DataAbstClass {
   int get totalTekichu =>countUserAtariTotal(appUserID);
   int get totalSha =>countUserShaTotal(appUserID);
 
-  final List<String> _editorList = []; //編集者リスト
-  final List<TachiData> tachiList = []; //立集合
-  final List<SankashaData> sankashaList = [];//参加者リスト
 
   int get sankashaNum =>sankashaList.length;
-  List<String> sankashaNames = [];
-  Map<String,String> sankashaNamesMap={};
-  Map<String,String> sankashaIDMap={};
 
   GyoshaData(this.mainEditorName, this.gyoshaName,
       this.gyoshaType, this.startDateTime,this.finishDateTime,
@@ -63,6 +59,7 @@ class GyoshaData extends DataAbstClass {
     }
     sankashaList.removeAt(index);
   }
+
   void deleteAppUserData(){
     for(int i=tachiList.length-1;i>-1;i--){
       if(tachiList[i].sankashaData!=null &&tachiList[i].sankashaData!.sankashaID ==appUserID){
@@ -121,6 +118,7 @@ class GyoshaData extends DataAbstClass {
     if(sankashaID==""){
       return 0;
     }
+
     for(TachiData tachiData in tachiList){
       if(tachiData.sankashaData!=null && tachiData.sankashaData!.sankashaID==sankashaID) {
         atariTotal += tachiData.atariShaNum;
