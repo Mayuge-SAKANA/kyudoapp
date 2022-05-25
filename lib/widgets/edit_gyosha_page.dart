@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
 
-import '../data/data_tachi_define.dart';
-import '../data/data_gyosha_define.dart';
+import '../data/data_tachi_object.dart';
+import '../data/data_gyosha_object.dart';
 import 'edit_gyosha_setting_sliverlist.dart';
 import 'edit_gyosha_reordable_listview.dart';
 
@@ -14,8 +14,8 @@ class GyoshaEditPage extends ConsumerWidget{
   const GyoshaEditPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context,WidgetRef ref) {
-    GyoshaData editingGyoshaData = ref.watch(gyoshaDatasProvider).editingGyoshaData;
-    List<TachiData> editingTachiList = editingGyoshaData.tachiList;
+    GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
+    List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
     var _scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(
@@ -42,12 +42,11 @@ class GyoshaEditPage extends ConsumerWidget{
           for(int i = editingTachiList.length-1; i>-1; i--){
             if(deleteStopFlag==true)break;
             if(editingTachiList[i].shaList.isEmpty){
-              editingGyoshaData.removeTachiAt(i);
+              editingGyoshaData.removeTachiAt(editingTachiList[i].tachiID);
             }else{
               deleteStopFlag=true;
             }
           }
-
           editingGyoshaData.addTachi();
           ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
 

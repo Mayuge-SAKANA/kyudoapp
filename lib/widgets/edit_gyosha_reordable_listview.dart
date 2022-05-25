@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
-
-
 import '../data/data_define.dart';
-import '../data/data_gyosha_define.dart';
-import '../data/data_tachi_define.dart';
+import '../data/data_gyosha_object.dart';
+import '../data/data_tachi_object.dart';
 import 'icon_asset.dart';
-
 
 
 class GyoshaSliverReorderableListView extends ConsumerStatefulWidget{
@@ -21,10 +16,11 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
   double iconSize = 30;
   @override
   Widget build(BuildContext context) {
-    GyoshaData editingGyoshaData = ref.watch(gyoshaDatasProvider).editingGyoshaData;
-    List<TachiData> editingTachiList = editingGyoshaData.tachiList;
+    GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
+    List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
 
     return SliverReorderableList(
+
       itemBuilder: (_, index) => ReorderableDelayedDragStartListener(
           index: index,
           key: Key('$index'),
@@ -36,7 +32,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                   width: 50.0,
                   height: 80.0,
                   child:Center(
-                    child:Text(editingTachiList[index].iteName,overflow: TextOverflow.ellipsis),
+                    child:Text(editingTachiList[index].sankashaData.sankashaName,overflow: TextOverflow.ellipsis),
                   ),
                 ),
 
@@ -93,8 +89,8 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                               editingGyoshaData.addTachi();
 
                               DateTime now = DateTime.now();
-                              if(now.isAfter(editingGyoshaData.finishDateTime)){
-                                editingGyoshaData.finishDateTime = now;
+                              if(now.isAfter(editingGyoshaData.gyoshaData.finishDateTime)){
+                                editingGyoshaData.gyoshaData.finishDateTime = now;
                               }
                               ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
                             }
@@ -112,7 +108,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                 ),
                 IconButton(
                   onPressed: () {
-                    editingGyoshaData.removeTachiAt(index);
+                    editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID);
                     ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
                   },
                   icon: const Icon(Icons.delete),
@@ -132,7 +128,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
     );
   }
 
-  void _onReorder(List<TachiData> items, int oldIndex, int newIndex) {
+  void _onReorder(List<TachiDataObj> items, int oldIndex, int newIndex) {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }

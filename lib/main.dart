@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/main_gyosha_timeline.dart';
-import 'data/data_view_model.dart';
+import 'data/control_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final gyoshaDatasProvider = StateNotifierProvider<GyoshaDatasNotifier, GyoshaEditManageClass>((ref) {

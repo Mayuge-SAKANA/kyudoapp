@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
-import '../data/data_gyosha_define.dart';
+import '../data/data_gyosha_object.dart';
 
 @immutable
 class SankashaCardContents extends  ConsumerWidget {
@@ -9,9 +9,9 @@ class SankashaCardContents extends  ConsumerWidget {
   const SankashaCardContents(this.index, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    GyoshaData editingGyoshaData = ref
+    GyoshaDataObj editingGyoshaData = ref
         .watch(gyoshaDatasProvider)
-        .editingGyoshaData;
+        .getEditingGyoshaData();
     var sankashaList = editingGyoshaData.sankashaList;
 
     return Card(
@@ -34,7 +34,7 @@ class SankashaCardContents extends  ConsumerWidget {
               if(sankashaList[index].isAppUser==true){
                 editingGyoshaData.isAppUserIsSankasha = false;
               }
-              editingGyoshaData.removeSankashaAt(index);
+              editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID);
               ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
             },
             icon: const Icon(Icons.delete),
@@ -55,9 +55,9 @@ class _DetermineSankashaListItem extends ConsumerWidget{
   const _DetermineSankashaListItem(this.index, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context,WidgetRef ref){
-    GyoshaData editingGyoshaData = ref
+    GyoshaDataObj editingGyoshaData = ref
         .watch(gyoshaDatasProvider)
-        .editingGyoshaData;
+        .getEditingGyoshaData();
     var sankashaList = editingGyoshaData.sankashaList;
     if(sankashaList[index].isAppUser==false){
       return TextFormField(

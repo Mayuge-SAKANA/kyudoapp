@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
-import '../data/data_gyosha_define.dart';
+
+import '../data/data_gyosha_object.dart';
 import 'edit_sankasha_appusercard.dart';
 import 'edit_sankasha_basic_card.dart';
 
@@ -16,7 +17,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
   @override
   void initState() {
     super.initState();
-    bool isAppUserIsSankasha = ref.read(gyoshaDatasProvider).editingGyoshaData.isAppUserIsSankasha;
+    bool isAppUserIsSankasha = ref.read(gyoshaDatasProvider).getEditingGyoshaData().isAppUserIsSankasha;
     getToggleList(isAppUserIsSankasha);
   }
   List<bool> getToggleList(bool isAppUserIsSankasha){
@@ -32,9 +33,9 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
 
   @override
   Widget build(BuildContext context) {
-    GyoshaData editingGyoshaData = ref
+    GyoshaDataObj editingGyoshaData = ref
         .watch(gyoshaDatasProvider)
-        .editingGyoshaData;
+        .getEditingGyoshaData();
     var sankashaList = editingGyoshaData.sankashaList;
 
     return Scaffold(
@@ -75,7 +76,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
           for(int i = sankashaList.length-1; i>-1; i--){
             if(deleteStopFlag==true)break;
             if(sankashaList[i].sankashaName==""){
-              editingGyoshaData.removeSankashaAt(i);
+              editingGyoshaData.removeSankashaAt(sankashaList[i].sankashaID);
             }else{
               deleteStopFlag=true;
             }

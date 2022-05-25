@@ -1,6 +1,6 @@
-import 'data_sha_define.dart';
-import 'data_tachi_define.dart';
-import 'data_gyosha_define.dart';
+import 'data_tachi_object.dart';
+import 'data_gyosha_object.dart';
+import 'data_sankasha_entity.dart';
 
 String generateID(String fstCap, int index, {int zeronum = 4}){
   return fstCap+index.toString().padLeft(zeronum,'0');
@@ -44,85 +44,64 @@ enum ShaResultType{
 }
 
 class ShakaiResultDataObj{
-  final GyoshaData gyoshaData;
-  final Map<String,SankashaResultDataObj> sankashaResultMap= {};
+  final GyoshaDataObj gyoshaDataObj;
+  Map<String,SankashaResultDataObj> sankashaResultMap= {};
   final Map<String, double>scoreMap = {};
   List<MapEntry>orderedScoreList = [];
   final Map<String, int>rankingMap = {};
 
-  ShakaiResultDataObj(this.gyoshaData){
-    for(SankashaData sankashaData in gyoshaData.sankashaList){
-      sankashaResultMap[sankashaData.sankashaID]=SankashaResultDataObj(gyoshaData, sankashaData);
+  ShakaiResultDataObj(this.gyoshaDataObj){
+    sankashaResultMap = Map.fromIterables(
+        gyoshaDataObj.sankashaList.map((e) => e.sankashaID),
+        gyoshaDataObj.sankashaList.map((e) => SankashaResultDataObj(gyoshaDataObj, e))
+    );
+    _createOrderedScoreList();
+    _setRankingIndex();
+  }
 
-      List<MapEntry> _orderData(Map<String, dynamic>maps, int
-      Function(MapEntry<String, dynamic>, MapEntry<String, dynamic>) sorter){
-        return maps.entries.toList()..sort((a, b)=> sorter(a, b));
-      }
-      orderedScoreList =_orderData(sankashaResultMap, (a, b) => (b.value as
-      SankashaResultDataObj).tekichuRate.compareTo((a.value as SankashaResultDataObj).tekichuRate));
-      int rankCounter = 1;
-      double oldScore = -100;
-      for(int i = 0;i<orderedScoreList.length;i++){
-        double newScore = orderedScoreList[i].value.tekichuRate;
-        if(oldScore-newScore>0.001){
-          rankCounter++;
-        }
-        oldScore=newScore;
-        rankingMap[orderedScoreList[i].key] = rankCounter;
-      }
+  void _createOrderedScoreList(){
+    List<MapEntry> _orderData(Map<String, dynamic>maps,
+        int Function(MapEntry<String, dynamic>,
+            MapEntry<String, dynamic>) sorter){
+      return maps.entries.toList()..sort((a, b)=> sorter(a, b));
+    }
+    orderedScoreList =_orderData(sankashaResultMap,
+            (a, b) => (b.value as SankashaResultDataObj).tekichuRate.compareTo((a.value as SankashaResultDataObj).tekichuRate));
+  }
+  void _setRankingIndex(){
+    int rankCounter = 1;
+    double oldScore = -100;
+    for(int i = 0;i<orderedScoreList.length;i++){
+      double newScore = orderedScoreList[i].value.tekichuRate;
+      if(oldScore-newScore>0.001){rankCounter++;}
+      oldScore=newScore;
+      rankingMap[orderedScoreList[i].key] = rankCounter;
     }
   }
 }
 
 class SankashaResultDataObj{
-  final GyoshaData gyoshaData;
+  final GyoshaDataObj gyoshaDataObj;
   final SankashaData sankashaData;
-  final List<ShaResultType> resultList = [];
-  int get totalSha =>gyoshaData.countUserShaTotal(sankashaData.sankashaID);
-  int get atariSha =>gyoshaData.countUserAtariTotal(sankashaData.sankashaID);
+  List<ShaResultType> resultList = [];
+  int get totalSha =>gyoshaDataObj.countUserShaTotal(sankashaData.sankashaID);
+  int get atariSha =>gyoshaDataObj.countUserAtariTotal(sankashaData.sankashaID);
   double get tekichuRate =>_calcTekichuRate();
 
-  SankashaResultDataObj(this.gyoshaData, this.sankashaData){
-      List<TachiData> userTachiList = gyoshaData.collectUserTachiData(
+  SankashaResultDataObj(this.gyoshaDataObj, this.sankashaData){
+      List<TachiDataObj> userTachiList = gyoshaDataObj.collectUserTachiData(
           sankashaData.sankashaID);
-      for (TachiData tachiData in userTachiList) {
-        for (ShaData shaData in tachiData.shaList) {
-          resultList.add(shaData.shaResult);
-        }
+      for (TachiDataObj tachiData in userTachiList) {
+        resultList = [...resultList,...tachiData.shaList.map((e) => e.shaResult)];
       }
     }
   double _calcTekichuRate(){
      return totalSha != 0 ? (atariSha / totalSha) : 0.0;
   }
-
 }
-
 
 
 abstract class DataAbstClass{
   Map<String, dynamic> toMap();
 }
 
-
-
-
-class SankashaData extends DataAbstClass{
-  final String sankashaID;
-  final String gyoshaID;
-  String sankashaName;
-  String sankashaViewName;
-  bool isAppUser;
-
-  SankashaData(this.sankashaID,this.gyoshaID,this.isAppUser,{this.sankashaName = "",this.sankashaViewName = ""});
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-    'sankashaID': sankashaID,
-    'gyoshaID': gyoshaID,
-    'sankashaName': sankashaName,
-    'sankashaViewName':sankashaViewName,
-    'isAppUser': isAppUser,
-    };
-    }
-}

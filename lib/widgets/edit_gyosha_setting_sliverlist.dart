@@ -6,7 +6,9 @@ import '../main.dart';
 import 'edit_sankasha_page.dart';
 
 import '../data/data_define.dart';
-import '../data/data_gyosha_define.dart';
+import '../data/data_gyosha_object.dart';
+import '../data/data_gyosha_entity.dart';
+import '../data/data_sankasha_entity.dart';
 
 
 class GyoshaSettingSliverList extends ConsumerStatefulWidget{
@@ -21,13 +23,14 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
   @override
   void initState() {
     super.initState();
-    GyoshaType initType = ref.read(gyoshaDatasProvider).editingGyoshaData.gyoshaType;
+    GyoshaType initType = ref.read(gyoshaDatasProvider).getEditingGyoshaData().gyoshaData.gyoshaType;
     _toggleList[initType.index]=true;
   }
 
   @override
   Widget build(BuildContext context) {
-    GyoshaData editingGyoshaData = ref.watch(gyoshaDatasProvider).editingGyoshaData;
+    GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
+    GyoshaData gyoshaData = editingGyoshaData.gyoshaData;
 
     return SliverList(
       delegate: SliverChildListDelegate(
@@ -36,17 +39,16 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
               decoration: const InputDecoration(hintText: 'タイトルを入力'),
               controller: TextEditingController.fromValue(
                 TextEditingValue(
-                  text: editingGyoshaData.gyoshaName,
+                  text: gyoshaData.gyoshaName,
                   selection: TextSelection.collapsed(offset:
-                  editingGyoshaData.gyoshaName.length),
+                  gyoshaData.gyoshaName.length),
                 ),
               ),
               onChanged: (newValue){
-                editingGyoshaData.gyoshaName = newValue;
+                gyoshaData.gyoshaName = newValue;
               },
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
-                //editingGyoshaData.gyoshaName =_tempTitle;
                 ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
               },
             ),
@@ -67,7 +69,7 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
                       }else{
                         _toggleList[i] = false;
                       }
-                      editingGyoshaData.gyoshaType = GyoshaType.values[index];
+                      gyoshaData.gyoshaType = GyoshaType.values[index];
                       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
                     }
                   });
@@ -85,16 +87,16 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
                             minTime: DateTime(2022, 5, 1,12),
                             maxTime: DateTime(2100, 5, 1,12), onChanged: (date) {
                             }, onConfirm: (date) {
-                              editingGyoshaData.startDateTime = date;
-                              if(editingGyoshaData.finishDateTime.isBefore(editingGyoshaData.startDateTime)){
-                                editingGyoshaData.finishDateTime = editingGyoshaData.startDateTime;
+                              gyoshaData.startDateTime = date;
+                              if(gyoshaData.finishDateTime.isBefore(gyoshaData.startDateTime)){
+                                gyoshaData.finishDateTime = gyoshaData.startDateTime;
                               }
                               ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
 
-                            }, currentTime: editingGyoshaData.startDateTime, locale: LocaleType.jp);
+                            }, currentTime: gyoshaData.startDateTime, locale: LocaleType.jp);
                       },
                       child: Text(
-                        '練習開始 ${editingGyoshaData.startDateTime.month}/${editingGyoshaData.startDateTime.day} ${editingGyoshaData.startDateTime.hour}:${editingGyoshaData.startDateTime.minute}',
+                        '練習開始 ${gyoshaData.startDateTime.month}/${gyoshaData.startDateTime.day} ${gyoshaData.startDateTime.hour}:${gyoshaData.startDateTime.minute}',
                       )
                   ),
                 ),
@@ -105,15 +107,15 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
                       onPressed: () {
                         DatePicker.showDateTimePicker(context,
                             showTitleActions: true,
-                            minTime: editingGyoshaData.startDateTime,
+                            minTime: gyoshaData.startDateTime,
                             maxTime: DateTime(2100, 5, 1), onChanged: (date) {
                             }, onConfirm: (date) {
-                              editingGyoshaData.finishDateTime = date;
+                              gyoshaData.finishDateTime = date;
                               ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
 
-                            }, currentTime: editingGyoshaData.finishDateTime, locale: LocaleType.jp);
+                            }, currentTime: gyoshaData.finishDateTime, locale: LocaleType.jp);
                       },
-                      child: Text('練習終了 ${editingGyoshaData.finishDateTime.month.toString().padLeft(2,'0')}/${editingGyoshaData.finishDateTime.day.toString().padLeft(2,'0')} ${editingGyoshaData.finishDateTime.hour.toString().padLeft(2,'0')}:${editingGyoshaData.finishDateTime.minute.toString().padLeft(2,'0')} ')
+                      child: Text('練習終了 ${gyoshaData.finishDateTime.month.toString().padLeft(2,'0')}/${gyoshaData.finishDateTime.day.toString().padLeft(2,'0')} ${gyoshaData.finishDateTime.hour.toString().padLeft(2,'0')}:${gyoshaData.finishDateTime.minute.toString().padLeft(2,'0')} ')
                   ),
                 ),
                 Flexible(

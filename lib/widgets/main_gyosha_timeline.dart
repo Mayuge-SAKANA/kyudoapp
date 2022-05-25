@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kyodoapp/main.dart';
-import '../data/data_view_model.dart';
+import '../main.dart';
+import '../data/control_data.dart';
 import '../data/data_define.dart';
-import '../data/data_gyosha_define.dart';
+import '../data/data_gyosha_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main_gyosha_card.dart';
 
@@ -11,14 +11,15 @@ class MainView extends ConsumerWidget {
   @override
   Widget build(BuildContext context,WidgetRef ref){
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
-    List<GyoshaData> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
+    List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var _scrollController = ScrollController();
 
     void _createNewGyoshaData(){
       DateTime startTime = DateTime.now();
       String initialGyoshaName = "今日の行射";
-      var gyoshaData = GyoshaData("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
+      var gyoshaData = GyoshaDataObj("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
       gyoshaData.addTachi();
+
       ref.read(gyoshaDatasProvider.notifier).addGyoshaData(gyoshaData);
     }
 
@@ -38,7 +39,7 @@ class MainView extends ConsumerWidget {
         controller: _scrollController,
         itemCount: gyoshaDataList.length,
         itemBuilder:(context, index) {
-          return GyoshaCard(index);
+          return GyoshaCard(gyoshaDataList[index].gyoshaID);
         }
       ),
 

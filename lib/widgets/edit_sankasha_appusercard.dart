@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
-import '../data/data_gyosha_define.dart';
+import '../data/data_gyosha_object.dart';
 
 class AppUserSankashaCard extends ConsumerStatefulWidget{
   const AppUserSankashaCard({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
   @override
   void initState() {
     super.initState();
-    bool isAppUserIsSankasha = ref.read(gyoshaDatasProvider).editingGyoshaData.isAppUserIsSankasha;
+    bool isAppUserIsSankasha = ref.read(gyoshaDatasProvider).getEditingGyoshaData().isAppUserIsSankasha;
     getToggleList(isAppUserIsSankasha);
   }
   List<bool> getToggleList(bool isAppUserIsSankasha){
@@ -30,9 +30,9 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
 
   @override
   Widget build(BuildContext context) {
-    GyoshaData editingGyoshaData = ref
+    GyoshaDataObj editingGyoshaData = ref
         .watch(gyoshaDatasProvider)
-        .editingGyoshaData;
+        .getEditingGyoshaData();
     return Card(
       child: Row(
         children: [
