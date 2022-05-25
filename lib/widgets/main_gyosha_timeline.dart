@@ -39,7 +39,7 @@ class MainView extends ConsumerWidget {
         controller: _scrollController,
         itemCount: gyoshaDataList.length,
         itemBuilder:(context, index) {
-          return GyoshaCard(gyoshaDataList[index].gyoshaID);
+          return GyoshaMainDataExpansionTile(gyoshaDataList[index].gyoshaID);
         }
       ),
 

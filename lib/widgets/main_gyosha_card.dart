@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:configurable_expansion_tile_null_safety/configurable_expansion_tile_null_safety.dart';
+
 import '../data/control_data.dart';
 import '../data/data_define.dart';
 import '../data/data_gyosha_object.dart';
@@ -8,161 +10,233 @@ import 'edit_gyosha_page.dart';
 import 'icon_asset.dart';
 
 
-@immutable
-class GyoshaCard extends ConsumerWidget{
-  final String gyoshaID;
-  const GyoshaCard(this.gyoshaID,{Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context, WidgetRef ref){
-    return Card(
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () async {
-              ref.read(gyoshaDatasProvider.notifier).setEditingGyoshaData(gyoshaID);
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context){
-                    return const GyoshaEditPage();
-                  })
-              );
-            },
-            child:
-            GyoshaMainDataRow(gyoshaID),
-          ),
-          GyoshaDetailExpansionTile(gyoshaID),
-        ],
-      ),
-    );
-  }
-}
+
 
 @immutable
-class GyoshaMainDataRow extends ConsumerWidget{
+class GyoshaMainDataExpansionTile extends ConsumerWidget{
   final String gyoshaID;
-  const GyoshaMainDataRow(this.gyoshaID, {Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context, WidgetRef ref){
-    GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
-    var gyoshaData = gyoshaEditManage.gyoshaDataList.where((element) => element.gyoshaID==gyoshaID).toList()[0].gyoshaData;
-    DateTime startDateTime = gyoshaData.startDateTime;
-    DateTime finishDateTime = gyoshaData.finishDateTime;
-
-    return Row(
-      children: [
-        SizedBox(
-          width: 100.0,
-          height: 70.0,
-          child:Center(
-            child:Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(startDateTime.year.toString().padLeft(4)),
-                Text(startDateTime.month.toString().padLeft(2)+"/"+startDateTime.day.toString().padLeft(2),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                Text(startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
-                    "-"+finishDateTime.hour.toString().padLeft(2,'0')+":"+finishDateTime.minute.toString().padLeft(2,'0')
-                )
-              ],
-            ),
-          ),
-        ),
-
-        Flexible(
-          child: Wrap(
-            children: [
-              SizedBox(
-                width: 250.0,
-                child: Text(gyoshaData.gyoshaName,
-                  style:  TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),),
-              )
-            ],
-          ),
-        ),
-
-        PopupMenuButton(
-          icon: const Icon(Icons.more_vert),
-          offset: const Offset(50,50),
-          initialValue: false,
-          onSelected: (isDelete){
-            if(isDelete==true){
-              ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaData.gyoshaID);
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            const PopupMenuItem(
-                child: ListTile(
-                  leading: Icon(Icons.delete),
-                  title : Text('削除'),
-                ),
-                value: true
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-@immutable
-class GyoshaDetailExpansionTile extends ConsumerWidget{
-  final String gyoshaID;
-  const GyoshaDetailExpansionTile(this.gyoshaID, {Key? key}) : super(key: key);
-  String _getTekichuResultString(GyoshaDataObj gyoshaDataObj,){
-    String tekichu = gyoshaDataObj.totalSha != 0 ? gyoshaDataObj.totalTekichu.toString() : "-";
-    String total = gyoshaDataObj.totalSha != 0 ? gyoshaDataObj.totalSha.toString() : "-";
-    String tekichuRate = gyoshaDataObj.totalSha != 0 ? (100*gyoshaDataObj.totalTekichu/gyoshaDataObj.totalSha).toStringAsFixed(1) : "-";
-    return "$tekichu本/$total本($tekichuRate%)";
-  }
-  String _getRenshuTime(GyoshaDataObj gyoshaDataObj){
-    String hour = gyoshaDataObj.renshuHour.toString();
-    String minutes = (gyoshaDataObj.renshuMinutes%60).toString();
-    return '$hour時間$minutes分';
-  }
+  const GyoshaMainDataExpansionTile(this.gyoshaID, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var gyoshaData = gyoshaDataList.where((element) => element.gyoshaID==gyoshaID).toList()[0];
-    return ExpansionTile(
-      title: Row(
+
+    void _moveToEditPage(){
+      ref.read(gyoshaDatasProvider.notifier).setEditingGyoshaData(gyoshaID);
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context){
+            return const GyoshaEditPage();
+          })
+      );
+    }
+    void _deleteSelectedGyoshaData(){
+      ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaData.gyoshaID);
+    }
+    return ConfigurableExpansionTile(
+
+      header: SizedBox(
+          height: MediaQuery.of(context).size.height*0.15,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.all(2),
+            child: Container(
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onPrimary,
+                borderRadius: BorderRadius.circular(5),
+                border:Border.all(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  width: 2,
+                ),
+              boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).shadowColor.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 1,
+                    //offset: Offset(0, 7), // changes position of shadow
+                ),
+              ],
+            ),
+             child: MainGyoshaCardHeaderContents(gyoshaData),
+          ),),
+      ),
+      /*
+       subtitle: Row(
         children: [
           Text(_getTekichuResultString(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 10,
               color: Theme.of(context).primaryColor,
             ),
           ),
           Text(_getRenshuTime(gyoshaData),
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 10,
               color: Theme.of(context).primaryColor,
             ),
           ),
         ],
       ),
-      children: <Widget>[
-        GyoshaDataScoreTable(gyoshaData),
+      leading: SizedBox(
+        child: DateTimeLeading(gyoshaData.gyoshaData.startDateTime,gyoshaData.gyoshaData.finishDateTime),
+      ),
+      * */
+
+
+      children: [
+        Column(
+          children: [
+            GyoshaDataScoreTable(gyoshaData),
+            MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
+          ],
+        ),
+
       ],
     );
   }
 }
 
+class MainGyoshaCardHeaderContents extends StatelessWidget{
+  final GyoshaDataObj gyoshaDataObj;
+  const MainGyoshaCardHeaderContents(this.gyoshaDataObj,{Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context){
+    DateTime startDateTime = gyoshaDataObj.gyoshaData.startDateTime;
+    DateTime finishDateTime = gyoshaDataObj.gyoshaData.finishDateTime;
+    return LayoutBuilder(builder: (ctx, constraint){
+      return Row(
+        children: [
+          SizedBox(
+            height: constraint.maxHeight,
+            width: constraint.maxWidth*0.25,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+
+              ),
+              child: DateTimeLeading(startDateTime,finishDateTime),
+            ),
+          ),
+          SizedBox(
+            height: constraint.maxHeight,
+            width: constraint.maxWidth*0.75,
+            child: Center(child: Text(gyoshaDataObj.gyoshaData.gyoshaName),),
+          )
+
+        ],
+      );
+
+
+    });
+  }
+}
+
+class MainGyoshaCardButtonBar extends StatelessWidget{
+  final VoidCallback _moveToEditPage;
+  final VoidCallback _deleteSelectedGyoshaData;
+  const MainGyoshaCardButtonBar(this._moveToEditPage,this._deleteSelectedGyoshaData,{Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+      ),
+    );
+    return ButtonBar(
+      alignment: MainAxisAlignment.spaceAround,
+      buttonHeight: 52.0,
+      buttonMinWidth: 90.0,
+      children: <Widget>[
+        TextButton(
+          style: flatButtonStyle,
+          onPressed: () {_deleteSelectedGyoshaData();},
+          child: Column(
+            children: const <Widget>[
+              Icon(Icons.delete),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 2.0),
+              ),
+              Text('削除'),
+            ],
+          ),
+        ),
+        TextButton(
+          style: flatButtonStyle,
+          onPressed: () {_moveToEditPage();},
+          child: Column(
+            children: const <Widget>[
+              Icon(Icons.edit),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 2.0),
+              ),
+              Text('編集'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  }
+
+
+class DateTimeLeading extends StatelessWidget{
+  final DateTime startDateTime;
+  final DateTime finishDateTime;
+  const DateTimeLeading(this.startDateTime,this.finishDateTime, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    return LayoutBuilder(builder: (ctx, constraint){
+      return Center(
+        child:Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(startDateTime.year.toString().padLeft(4),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: constraint.maxWidth*0.13,
+              ),
+            ),
+            FittedBox(
+              child: Text(startDateTime.month.toString().padLeft(2)+"/"+startDateTime.day.toString().padLeft(2),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: constraint.maxWidth*0.3,
+                ),
+              ),
+            ),
+
+            Text(startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
+                "-"+finishDateTime.hour.toString().padLeft(2,'0')+":"+finishDateTime.minute.toString().padLeft(2,'0'),
+                style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: constraint.maxWidth*0.13,
+                ),
+            )
+          ],
+        ),
+      );
+    });
+
+
+  }
+}
+
+
+
+
+
 class GyoshaDataScoreTable extends StatelessWidget{
   final GyoshaDataObj gyoshaData;
   const GyoshaDataScoreTable(this.gyoshaData, {Key? key}) : super(key: key);
-
   List<TableRow> _getTableRows(shakaiData){
     return gyoshaData.sankashaList.map((sankashaData) {
       SankashaResultDataObj sankashaResultData = shakaiData.sankashaResultMap[sankashaData.sankashaID]!;
@@ -206,7 +280,6 @@ class GyoshaDataScoreTable extends StatelessWidget{
   Widget build(BuildContext context){
     ShakaiResultDataObj shakaiData = gyoshaData.shakaiResultDataObj;
     List<TableRow> tableRows =_getTableRows(shakaiData);
-
     return Table(
       columnWidths: const <int, TableColumnWidth>{
         0: FixedColumnWidth(80),
