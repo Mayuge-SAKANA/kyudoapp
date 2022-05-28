@@ -15,7 +15,7 @@ class SankashaCardContents extends  ConsumerWidget {
     var sankashaList = editingGyoshaData.sankashaList;
 
     return Card(
-      key: Key('$index'),
+      key: ValueKey(editingGyoshaData.sankashaList[index].sankashaID),
       child: Row(
         children: [
           Text((index + 1).toString().padLeft(3)),
@@ -26,7 +26,10 @@ class SankashaCardContents extends  ConsumerWidget {
           SizedBox(
             //height: 60,
             width: 200,
-            child: _DetermineSankashaListItem(index),
+            child: sankashaList[index].isAppUser==false?
+            _DetermineSankashaListItem(index):
+            Text(sankashaList[index].sankashaName,overflow: TextOverflow.ellipsis)
+            ,
           ),
 
           IconButton(
@@ -59,8 +62,7 @@ class _DetermineSankashaListItem extends ConsumerWidget{
         .watch(gyoshaDatasProvider)
         .getEditingGyoshaData();
     var sankashaList = editingGyoshaData.sankashaList;
-    if(sankashaList[index].isAppUser==false){
-      return TextFormField(
+    return TextFormField(
         controller: TextEditingController.fromValue(
           TextEditingValue(
             text: sankashaList[index].sankashaName,
@@ -78,7 +80,5 @@ class _DetermineSankashaListItem extends ConsumerWidget{
           ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
         },
       );
-    }
-    return Text(sankashaList[index].sankashaName,overflow: TextOverflow.ellipsis);
   }
 }

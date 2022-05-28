@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'data_gyosha_object.dart';
-import 'data_define.dart';
 
 @immutable
 class GyoshaEditManageClass{

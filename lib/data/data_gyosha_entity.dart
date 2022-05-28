@@ -3,7 +3,7 @@ import 'data_define.dart';
 class GyoshaData extends DataAbstClass {
   final String gyoshaID; //行射固有ID
   final String mainEditorName; // 編集者名
-  final GyoshaState gyoshaState; //オンラインオフライン
+  GyoshaState gyoshaState; //オンラインオフライン
   String gyoshaName; //行射タイトル
   GyoshaType gyoshaType; //行射種類
   DateTime startDateTime;//開始時間
@@ -13,12 +13,9 @@ class GyoshaData extends DataAbstClass {
   String get startDateTimeStr =>dateTimeToString(startDateTime); //開始時間
   String get finishDateTimeStr => dateTimeToString(finishDateTime); //終了時間
 
-
   GyoshaData(this.gyoshaID,this.mainEditorName, this.gyoshaName,
        this.startDateTime,this.finishDateTime,
       {this.gyoshaType = GyoshaType.renshu,this.gyoshaState = GyoshaState.offline});
-
-
 
   @override
   Map<String, dynamic> toMap() {

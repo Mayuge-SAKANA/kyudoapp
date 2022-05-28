@@ -47,12 +47,13 @@ class GyoshaDataObj {
     if(appUserID == sankashaID){
       isAppUserIsSankasha=false;
     }
-    sankashaList = [...sankashaList.where((item){return item.sankashaID==sankashaID;})];
+    sankashaList = [...sankashaList.where((item){return item.sankashaID!=sankashaID;})];
+    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID==appUserID)];
   }
 
   void deleteAppUserData(){
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID==appUserID)];
-    sankashaList = [...sankashaList.where((item) => item.sankashaID==appUserID) ];
+    sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
     isAppUserIsSankasha = false;
   }
 
@@ -64,7 +65,6 @@ class GyoshaDataObj {
   }
 
   void addTachi({bool addAll = true}){
-
     if(addAll==true){
       for(SankashaData sankashaData in sankashaList){
         _tachiInstanceNumber++;
@@ -72,9 +72,7 @@ class GyoshaDataObj {
         var tachiData = TachiDataObj(tachiID, gyoshaID,sankashaData, tachiNumber: tachiList.length-1);
         tachiList.add(tachiData);
       }
-
     }
-
   }
   void removeTachiAt(String tachiID){
     tachiList = tachiList.where((item)=>item.tachiID!=tachiID).toList();

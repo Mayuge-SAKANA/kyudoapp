@@ -10,6 +10,15 @@ Map<ShaResultType, Icon> shaResultMap = {
   ShaResultType.delete: const Icon(Icons.delete),
 };
 
+Map<ShaResultType, IconData> shaResultIcon = {
+  ShaResultType.atari: Icons.panorama_fish_eye,
+  ShaResultType.hazure: Icons.clear,
+  ShaResultType.shitsu: Icons.subdirectory_arrow_right,
+  ShaResultType.fumei: Icons.question_mark,
+  ShaResultType.nashi: Icons.minimize,
+  ShaResultType.delete: Icons.delete,
+};
+
 Map<ShaResultType, String> shaResultString = {
   ShaResultType.atari: "○",
   ShaResultType.hazure: "×",

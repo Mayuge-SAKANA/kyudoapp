@@ -51,7 +51,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
               children: <Widget>[
                 for (int index = 0; index < sankashaList.length; index += 1)
                   Card(
-                    key: Key('$index'),
+                    key: ValueKey(sankashaList[index].sankashaID),
                     child: SankashaCardContents(index),
                   ),
               ],

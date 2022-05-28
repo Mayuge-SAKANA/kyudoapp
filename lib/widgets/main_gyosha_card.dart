@@ -22,7 +22,6 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var gyoshaData = gyoshaDataList.where((element) => element.gyoshaID==gyoshaID).toList()[0];
-
     void _moveToEditPage(){
       ref.read(gyoshaDatasProvider.notifier).setEditingGyoshaData(gyoshaID);
       Navigator.of(context).push(
@@ -54,41 +53,16 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
                     color: Theme.of(context).shadowColor.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 1,
-                    //offset: Offset(0, 7), // changes position of shadow
                 ),
               ],
             ),
              child: MainGyoshaCardHeaderContents(gyoshaData),
           ),),
       ),
-      /*
-       subtitle: Row(
-        children: [
-          Text(_getTekichuResultString(gyoshaData),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 10,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          Text(_getRenshuTime(gyoshaData),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 10,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-        ],
-      ),
-      leading: SizedBox(
-        child: DateTimeLeading(gyoshaData.gyoshaData.startDateTime,gyoshaData.gyoshaData.finishDateTime),
-      ),
-      * */
-
-
       children: [
         Column(
           children: [
+            SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
             GyoshaDataScoreTable(gyoshaData),
             MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
           ],
@@ -125,11 +99,8 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
             width: constraint.maxWidth*0.75,
             child: Center(child: Text(gyoshaDataObj.gyoshaData.gyoshaName),),
           )
-
         ],
       );
-
-
     });
   }
 }
@@ -232,27 +203,46 @@ class DateTimeLeading extends StatelessWidget{
 
 
 
-
-
 class GyoshaDataScoreTable extends StatelessWidget{
   final GyoshaDataObj gyoshaData;
+  final int row = 10;
   const GyoshaDataScoreTable(this.gyoshaData, {Key? key}) : super(key: key);
-  List<TableRow> _getTableRows(shakaiData){
+
+  List<TableRow> _getTableRows(ShakaiResultDataObj shakaiData, double resultSpaceWidth, double rateSpaceWidth){
     return gyoshaData.sankashaList.map((sankashaData) {
       SankashaResultDataObj sankashaResultData = shakaiData.sankashaResultMap[sankashaData.sankashaID]!;
-      List<Widget>iconList = sankashaResultData.resultList.map((e){return shaResultMap[e] as Widget;}).toList();
+
       String tekichu = sankashaResultData.totalSha != 0 ? sankashaResultData.atariSha.toString() : "-";
       String total = sankashaResultData.totalSha != 0 ? sankashaResultData.totalSha.toString() : "-";
       String tekichuRate = sankashaResultData.totalSha != 0 ? (100*sankashaResultData.tekichuRate).toStringAsFixed(1) : "-";
-      String data = "$tekichu本/$total本";
+
       String rate = "($tekichuRate%)";
       String rank = shakaiData.rankingMap[sankashaData.sankashaID].toString();
+
+      List<Widget>resultIconsList = List.generate(sankashaResultData.resultList.length, (index){
+        Widget? icon;
+        if(index<sankashaResultData.resultList.length){
+          IconData i =  shaResultIcon[sankashaResultData.resultList[index]]!;
+          icon = Icon(i,size: 0.95 *resultSpaceWidth/row,);
+        }
+        return SizedBox(
+          height: resultSpaceWidth/row,
+          width: resultSpaceWidth/row,
+          child: icon,
+        );
+      }).toList();
 
       return TableRow(
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              child: Text(rank+"位"+sankashaData.sankashaName,overflow: TextOverflow.ellipsis),
+              child: FittedBox(child: Text("$rank位"),),)
+            ,
+            Container(
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
+                child: Text(sankashaData.sankashaName==""? "名無し":sankashaData.sankashaName ,overflow: TextOverflow.ellipsis),
+              )
             ),
             Container(
               alignment: Alignment.centerLeft,
@@ -260,15 +250,16 @@ class GyoshaDataScoreTable extends StatelessWidget{
               Wrap(
                 direction: Axis.horizontal,
                 children: [
-                  ...iconList,
+                  ...resultIconsList,
                 ],
               ),
             ),
             Container(
-              alignment: Alignment.centerLeft,
+              //padding: EdgeInsets.symmetric(horizontal: 2),
+              alignment: Alignment.center,
               child: Column(children: [
-                Text(data),
-                Text(rate),
+                FittedBox(child: Text("$tekichu本/$total本")),
+                FittedBox(child: Text(rate),),
               ],),
             ),
           ]
@@ -279,15 +270,22 @@ class GyoshaDataScoreTable extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     ShakaiResultDataObj shakaiData = gyoshaData.shakaiResultDataObj;
-    List<TableRow> tableRows =_getTableRows(shakaiData);
-    return Table(
-      columnWidths: const <int, TableColumnWidth>{
-        0: FixedColumnWidth(80),
-        1: FlexColumnWidth(),
-        2: FixedColumnWidth(64),
-      },
-      children: [...tableRows],
-    );
+    return LayoutBuilder(builder: (context, constraint){
+        double rankSpaceSize = constraint.maxWidth*0.08;
+        double nameSpaceSize = constraint.maxWidth*0.15;
+        double resultSpaceSize = constraint.maxWidth*0.6;
+        double rateSpaceSize = constraint.maxWidth*0.17;
+      return Table(
+        columnWidths: <int, TableColumnWidth>{
+          0: FixedColumnWidth(rankSpaceSize),
+          1: FixedColumnWidth(nameSpaceSize),
+          2: FixedColumnWidth(resultSpaceSize),
+          3: FixedColumnWidth(rateSpaceSize),
+        },
+        children: [..._getTableRows(shakaiData,resultSpaceSize,rateSpaceSize)],
+      );
+    });
+
   }
 
 }

@@ -27,5 +27,9 @@ class TachiDataObj {
     return shaList.where((element) => element.shaResult==ShaResultType.atari).length;
   }
 
+  void removeShaAt(String shaID){
+    return shaList.removeWhere((element) => element.shaID==shaID);
+  }
+
   }
 
