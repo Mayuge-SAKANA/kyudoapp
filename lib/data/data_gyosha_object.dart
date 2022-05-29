@@ -51,7 +51,12 @@ class GyoshaDataObj {
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     setTachiIndex();
     setSankashaIndex();
+  }
 
+  SankashaData getSankashaAt(String sankashaID){
+    return sankashaList.firstWhere((element){
+      return element.sankashaID==sankashaID;
+    });
   }
 
   void deleteAppUserData(){

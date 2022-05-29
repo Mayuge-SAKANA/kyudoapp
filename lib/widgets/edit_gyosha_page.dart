@@ -8,7 +8,7 @@ import '../data/data_gyosha_object.dart';
 import 'edit_gyosha_setting_sliverlist.dart';
 import 'edit_gyosha_reordable_listview.dart';
 
-
+import 'editing_gyosha_explanation.dart';
 
 class GyoshaEditPage extends ConsumerWidget{
   const GyoshaEditPage({Key? key}) : super(key: key);
@@ -22,7 +22,15 @@ class GyoshaEditPage extends ConsumerWidget{
         title: const Text('行射記録'),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context){
+                    return const EditingGyoshaText();
+                  })
+              );
+
+
+            },
             icon: const Icon(Icons.text_snippet),
           ),
         ],

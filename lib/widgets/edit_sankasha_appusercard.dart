@@ -33,54 +33,47 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
     GyoshaDataObj editingGyoshaData = ref
         .watch(gyoshaDatasProvider)
         .getEditingGyoshaData();
-    return Card(
-      child: Row(
-        children: [
-          Flexible(child:
-          Wrap(
-            children: [
-              Text(editingGyoshaData.appUserData!.sankashaName),
-            ],
-          )
-          ),
+    return LayoutBuilder(builder: (context,constrain){
+      return  Row(
+          children: [
 
-          const SizedBox(
-            width: 50.0,
-            height: 60.0,
-          ),
+            SizedBox(
+              width:constrain.maxWidth*0.6,
+              child: Text("あなた："+editingGyoshaData.appUserData!.sankashaName),
+            ),
+            SizedBox(
+              width: constrain.maxWidth*0.35,
+              child: ToggleButtons(
+                children: const [
+                  Text("参加"),
+                  Text("不参加"),
+                ],
+                isSelected: getToggleList(editingGyoshaData.isAppUserIsSankasha),
+                onPressed: (index) {
+                  setState(() {
+                    for(int i=0;i<_toggleList.length;i++){
+                      if(i==index){
+                        _toggleList[i] = true;
+                      }else{
+                        _toggleList[i] = false;
+                      }
+                      if(_toggleList[0]==true){
+                        editingGyoshaData.addAppUserToSankasha();
+                      }else{
+                        editingGyoshaData.deleteAppUserData();
+                      }
+                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                    }
+                  });
+                },
+              ),
+            ),
 
-          ToggleButtons(
-            children: const [
-              Text("参加"),
-              Text("不参加"),
-            ],
-            isSelected: getToggleList(editingGyoshaData.isAppUserIsSankasha),
-            onPressed: (index) {
-              setState(() {
-                for(int i=0;i<_toggleList.length;i++){
-                  if(i==index){
-                    _toggleList[i] = true;
-                  }else{
-                    _toggleList[i] = false;
-                  }
-                  if(_toggleList[0]==true){
-                    editingGyoshaData.addAppUserToSankasha();
-                  }else{
-                    editingGyoshaData.deleteAppUserData();
-                  }
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
-                }
-              });
-            },
-          ),
 
-          const SizedBox(
-            width: 50.0,
-            height: 60.0,
-          )
-        ],
-      ),
-    );
+          ],
+        );
+    });
+
 
   }
 

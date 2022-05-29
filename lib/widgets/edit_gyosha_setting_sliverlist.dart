@@ -19,9 +19,6 @@ class GyoshaSettingSliverList extends ConsumerStatefulWidget{
 
 class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
   final _toggleList = <bool>[false, false, false];
-
-
-
   @override
   void initState() {
     super.initState();

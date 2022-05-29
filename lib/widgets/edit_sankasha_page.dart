@@ -38,6 +38,60 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
         .getEditingGyoshaData();
     var sankashaList = editingGyoshaData.sankashaList;
 
+    void myShowModalBottomSheetSankasha(BuildContext context, [String sankashaID=""]){
+      String tempText = "";
+      String initName = sankashaID==""? "":editingGyoshaData.getSankashaAt(sankashaID).sankashaName;
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('参加者名を入力'),
+            content: TextFormField(
+              decoration: const InputDecoration(hintText: '参加者名を入力'),
+              controller: TextEditingController.fromValue(
+                TextEditingValue(
+                  text: initName,
+                  selection: TextSelection.collapsed(
+                      offset: (initName).length),
+                ),
+              ),
+              onChanged: (newValue){
+                tempText = newValue;
+              },
+              onEditingComplete: () {
+                FocusScope.of(context).unfocus();
+
+              },),
+
+            actions: <Widget>[
+              TextButton(
+                child: const Text('キャンセル'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  if(tempText!=""){
+                    if(initName==""){
+                      editingGyoshaData.addSankasha(tempText);
+                    }else{
+                      editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
+                    }
+                  };
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  Navigator.pop(context);
+                  //OKを押したあとの処理
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('参加者編集'),
@@ -72,17 +126,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
 
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          bool deleteStopFlag = false;
-          for(int i = sankashaList.length-1; i>-1; i--){
-            if(deleteStopFlag==true)break;
-            if(sankashaList[i].sankashaName==""){
-              editingGyoshaData.removeSankashaAt(sankashaList[i].sankashaID);
-            }else{
-              deleteStopFlag=true;
-            }
-          }
-          editingGyoshaData.addSankasha("", isAppUser: false);
-          ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+          myShowModalBottomSheetSankasha(context);
         },
         child: const Icon(Icons.add),
       ),

@@ -63,6 +63,8 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
         Column(
           children: [
             SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
+            gyoshaData.gyoshaData.memoText==null?const SizedBox():GyoshaExplainText(gyoshaData.gyoshaData.memoText!),
+            SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
             GyoshaDataScoreTable(gyoshaData),
             MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
           ],
@@ -70,6 +72,18 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
 
       ],
     );
+  }
+}
+
+class GyoshaExplainText extends StatelessWidget{
+  final String expText;
+  const GyoshaExplainText(this.expText,{Key? key}) : super(key: key);
+  @override
+  Widget build( BuildContext context){
+   return Container(
+     alignment: Alignment.centerLeft,
+     child: Text(expText),
+   );
   }
 }
 
