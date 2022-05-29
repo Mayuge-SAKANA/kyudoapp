@@ -19,6 +19,9 @@ class GyoshaSettingSliverList extends ConsumerStatefulWidget{
 
 class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
   final _toggleList = <bool>[false, false, false];
+
+
+
   @override
   void initState() {
     super.initState();
@@ -69,27 +72,77 @@ class GyoshaNameTextFormField extends ConsumerStatefulWidget{
 }
 
 class _GyoshaNameTextFormField extends ConsumerState<GyoshaNameTextFormField>{
+
   @override
   Widget build(BuildContext context){
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
     GyoshaData gyoshaData = editingGyoshaData.gyoshaData;
-    return TextFormField(
-      decoration: const InputDecoration(hintText: 'タイトルを入力'),
-      controller: TextEditingController.fromValue(
-        TextEditingValue(
-          text: gyoshaData.gyoshaName,
-          selection: TextSelection.collapsed(offset:
-          gyoshaData.gyoshaName.length),
-        ),
-      ),
-      onChanged: (newValue){
-        gyoshaData.gyoshaName = newValue;
-      },
-      onEditingComplete: () {
-        FocusScope.of(context).unfocus();
-        ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
-      },
-    );
+
+    void myShowModalBottomSheet(BuildContext context){
+      String tempText = "";
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('行射名を入力'),
+            content: TextFormField(
+              decoration: const InputDecoration(hintText: 'タイトルを入力'),
+              controller: TextEditingController.fromValue(
+                TextEditingValue(
+                  text: gyoshaData.gyoshaName,
+                  selection: TextSelection.collapsed(offset:
+                  gyoshaData.gyoshaName.length),
+                ),
+              ),
+              onChanged: (newValue){
+                tempText = newValue;
+              },
+              onEditingComplete: () {
+                FocusScope.of(context).unfocus();
+
+              },),
+
+            actions: <Widget>[
+              TextButton(
+                child: const Text('キャンセル'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  if(tempText!="") gyoshaData.gyoshaName = tempText;
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  Navigator.pop(context);
+                  //OKを押したあとの処理
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+
+    return LayoutBuilder(builder: (context, constrain){
+      return Row(
+        children: [
+          SizedBox(
+          width: constrain.maxWidth*0.8,
+          child: Text(gyoshaData.gyoshaName ),
+          ),
+          SizedBox(
+            width: constrain.maxWidth*0.2,
+            child: ElevatedButton(
+              child: const Text('編集'),
+              onPressed: () {
+                myShowModalBottomSheet(context);
+              },
+            ),),
+        ],
+      );
+    });
   }
 }
 
@@ -163,7 +216,7 @@ class StartTimeTextColumn extends ConsumerWidget{
           child: Column(
             children: [
               const Text('練習開始'),
-              Text('${gyoshaData.startDateTime.month}/${gyoshaData.startDateTime.day} ${gyoshaData.startDateTime.hour.toString().padLeft(2,'0')}:${gyoshaData.startDateTime.minute}'),
+              Text('${gyoshaData.startDateTime.month.toString().padLeft(2,'0')}/${gyoshaData.startDateTime.day.toString().padLeft(2,'0')} ${gyoshaData.startDateTime.hour.toString().padLeft(2,'0')}:${gyoshaData.startDateTime.minute.toString().padLeft(2,'0')}'),
             ],
           )
       );
@@ -203,31 +256,45 @@ class SankashaEditRow extends ConsumerWidget{
   @override
   Widget build(BuildContext context, WidgetRef ref){
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
-    return Row(
-      children: [
-        const Text("参加人数"),
-        Text('${editingGyoshaData.sankashaNum}'),
-        const Text("参加者名"),
-        Wrap(
-            children:
-            [
-              Text(editingGyoshaData.sankashaList.map<String>((SankashaData value) => value.sankashaName==""? "名無し": value.sankashaName).join(', '),
-                  overflow: TextOverflow.ellipsis),
-            ]
-        ),
+    return LayoutBuilder(builder: (context, constrain){
+      return Row(
+        children: [
+          SizedBox(
+            width: constrain.maxWidth*0.2,
+            child: const Center(child: Text("参加人数"),),
+          ),
+          SizedBox(
+            width: constrain.maxWidth*0.1,
+            child: Center(child: Text('${editingGyoshaData.sankashaNum}人'),),
+          ),
+          SizedBox(
+            width: constrain.maxWidth*0.5,
+            child: Text(editingGyoshaData.sankashaList.map<String>((SankashaData value) => value.sankashaName==""? "名無し": value.sankashaName).join(', '),
+                overflow: TextOverflow.ellipsis),
+          ),
+          SizedBox(
+            width: constrain.maxWidth*0.2,
+            child: ElevatedButton(
+              child: const Text('編集'),
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context){
+                      return const SankashaEditPage();
+                    })
+                );
+              },
+            ),)
+        ],
+      );
+    } );
 
-        TextButton(
-          child: const Text('編集'),
-          onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context){
-                  return const SankashaEditPage();
-                })
-            );
-          },
-        ),
-      ],
-    );
   }
 
 }
+
+
+
+
+
+
+

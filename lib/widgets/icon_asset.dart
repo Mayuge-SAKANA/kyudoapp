@@ -27,3 +27,4 @@ Map<ShaResultType, String> shaResultString = {
   ShaResultType.nashi: "－",
   ShaResultType.delete: "",
 };
+
