@@ -58,6 +58,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
       itemCount: editingTachiList.length,
       onReorder: (int oldIndex, int newIndex) {
         _onReorder(editingTachiList, oldIndex, newIndex);
+        editingGyoshaData.setTachiIndex();
         ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
       },
       proxyDecorator: (widget, _, __) {

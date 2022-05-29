@@ -5,7 +5,8 @@ class SankashaData extends DataAbstClass{
   final String gyoshaID;
   String sankashaName;
   bool isAppUser;
-  SankashaData(this.sankashaID,this.gyoshaID,this.isAppUser,{this.sankashaName = ""});
+  int sankashaNumber;
+  SankashaData(this.sankashaID,this.gyoshaID,this.isAppUser,{this.sankashaName = "", this.sankashaNumber=0});
   @override
   Map<String, dynamic> toMap() {
     return {

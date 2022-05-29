@@ -38,7 +38,7 @@ class GyoshaDataObj {
   SankashaData addSankasha(String newSankashaName,{bool isAppUser=false}){
     _sankashaInstanceNumber++;
     String newSankashaID = gyoshaID+generateID('U', _sankashaInstanceNumber);
-    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName);
+    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length-1);
     sankashaList.add(newSankasha);
     return newSankasha;
   }
@@ -48,13 +48,18 @@ class GyoshaDataObj {
       isAppUserIsSankasha=false;
     }
     sankashaList = [...sankashaList.where((item){return item.sankashaID!=sankashaID;})];
-    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID==appUserID)];
+    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
+    setTachiIndex();
+    setSankashaIndex();
+
   }
 
   void deleteAppUserData(){
-    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID==appUserID)];
+    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
     isAppUserIsSankasha = false;
+    setTachiIndex();
+    setSankashaIndex();
   }
 
   void addAppUserToSankasha(){
@@ -62,6 +67,23 @@ class GyoshaDataObj {
       sankashaList = [appUserData!,...sankashaList];
     }
     isAppUserIsSankasha = true;
+    setSankashaIndex();
+  }
+
+  void setSankashaIndex(){
+    sankashaList = List.generate(sankashaList.length, (index) {
+      SankashaData sankashaData = sankashaList[index];
+      sankashaData.sankashaNumber = index;
+      return sankashaData;
+    });
+  }
+
+  void setTachiIndex(){
+    tachiList = List.generate(tachiList.length, (index){
+      TachiDataObj tachiDataObj = tachiList[index];
+      tachiDataObj.tachiData.tachiNumber = index;
+      return tachiDataObj;
+    }).toList();
   }
 
   void addTachi({bool addAll = true}){
@@ -76,6 +98,7 @@ class GyoshaDataObj {
   }
   void removeTachiAt(String tachiID){
     tachiList = tachiList.where((item)=>item.tachiID!=tachiID).toList();
+    setTachiIndex();
   }
   int countUserAtariTotal(String sankashaID){
     return tachiList.where((element) => element.sankashaData.sankashaID==sankashaID).fold(0, (previousValue, element)=>previousValue+element.atariShaNum);

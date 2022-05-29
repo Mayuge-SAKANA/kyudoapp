@@ -42,8 +42,6 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
     );
   }
 
-
-
   void setEditingGyoshaData(String gyoshaID){
     state = state.copyWith(
         editingGyoshaDataID: gyoshaID
