@@ -38,6 +38,9 @@ dependencies:
   flutter_riverpod: ^1.0.3
   expansion_tile_card: ^2.0.0
   configurable_expansion_tile_null_safety: ^2.0.2
+  flutter_svg: ^1.1.0
+  flutter_svg_provider: ^1.0.3
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +65,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/imgs/SVG/maku.svg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

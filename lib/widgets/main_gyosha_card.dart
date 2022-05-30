@@ -8,7 +8,7 @@ import '../data/data_gyosha_object.dart';
 import '../main.dart';
 import 'edit_gyosha_page.dart';
 import 'icon_asset.dart';
-
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 
 
@@ -35,40 +35,38 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
     }
     return ConfigurableExpansionTile(
 
+
       header: SizedBox(
           height: MediaQuery.of(context).size.height*0.15,
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.all(2),
-            child: Container(
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary,
-                borderRadius: BorderRadius.circular(5),
-                border:Border.all(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  width: 2,
+          width: MediaQuery.of(context).size.width*0.95,
+          child:
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Material(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  surfaceTintColor: Theme.of(context).colorScheme.primary,
+                  elevation: Theme.of(context).cardTheme.elevation??1,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  child:  MainGyoshaCardHeaderContents(gyoshaData),
                 ),
-              boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).shadowColor.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 1,
-                ),
-              ],
-            ),
-             child: MainGyoshaCardHeaderContents(gyoshaData),
-          ),),
+              ),
       ),
       children: [
-        Column(
-          children: [
-            SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
-            gyoshaData.gyoshaData.memoText==null?const SizedBox():GyoshaExplainText(gyoshaData.gyoshaData.memoText!),
-            SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
-            GyoshaDataScoreTable(gyoshaData),
-            MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
-          ],
+        SizedBox(
+          width: MediaQuery.of(context).size.width*0.95,
+          child: Column(
+            children: [
+              SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
+              gyoshaData.gyoshaData.memoText==null?const SizedBox():GyoshaExplainText(gyoshaData.gyoshaData.memoText!),
+              const Divider(),
+              //SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
+              GyoshaDataScoreTable(gyoshaData),
+
+              MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
+            ],
+          ),
         ),
+
 
       ],
     );
@@ -90,31 +88,101 @@ class GyoshaExplainText extends StatelessWidget{
 class MainGyoshaCardHeaderContents extends StatelessWidget{
   final GyoshaDataObj gyoshaDataObj;
   const MainGyoshaCardHeaderContents(this.gyoshaDataObj,{Key? key}) : super(key: key);
+
+  String getDateTxt(DateTime startDateTime){
+    return startDateTime.year.toString().padLeft(4)+"/"+
+        startDateTime.month.toString().padLeft(2)+"/"+startDateTime.day.toString().padLeft(2);
+  }
+  String getTimeTxt(DateTime startDateTime, DateTime finishDateTime){
+    return startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
+        "-"+finishDateTime.hour.toString().padLeft(2,'0')+":"+finishDateTime.minute.toString().padLeft(2,'0');
+  }
+  
   @override
   Widget build(BuildContext context){
     DateTime startDateTime = gyoshaDataObj.gyoshaData.startDateTime;
     DateTime finishDateTime = gyoshaDataObj.gyoshaData.finishDateTime;
     return LayoutBuilder(builder: (ctx, constraint){
-      return Row(
+      return Column(
         children: [
-          SizedBox(
-            height: constraint.maxHeight,
-            width: constraint.maxWidth*0.25,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
 
-              ),
-              child: DateTimeLeading(startDateTime,finishDateTime),
+            SizedBox(
+              height: constraint.maxHeight*0.4,
+              width: constraint.maxWidth,
+              child:  Container(
+                decoration: BoxDecoration(
+                  image:  DecorationImage(
+                      image: Svg('assets/imgs/SVG/maku.svg',color: Theme.of(context).colorScheme.primaryContainer),
+                      fit: BoxFit.fitWidth,
+
+                  ),
+                ),
+                alignment: Alignment.bottomCenter,
+                child: Text(getDateTxt(startDateTime)+" "+ getTimeTxt(startDateTime, finishDateTime)),),
             ),
-          ),
           SizedBox(
-            height: constraint.maxHeight,
-            width: constraint.maxWidth*0.75,
-            child: Center(child: Text(gyoshaDataObj.gyoshaData.gyoshaName),),
-          )
+            height: constraint.maxHeight*0.6,
+            width: constraint.maxWidth,
+            child:  Container(
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                          SizedBox(
+                            height: constraint.maxHeight*0.6,
+                            width: constraint.maxWidth*0.2,
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: CircleAvatar(
+                                  radius: constraint.maxWidth*0.07,
+                                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(0),
+                                    child:
+                                    FittedBox(
+                                      child: Text("練"),
+                                    ),
+                                  )
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: constraint.maxHeight*0.6,
+                            width: constraint.maxWidth*0.6,
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: FittedBox(child:
+                                Text(gyoshaDataObj.gyoshaData.gyoshaName),
+                                ),
+                            ),
+                          ),
+                        SizedBox(
+                          height: constraint.maxHeight*0.6,
+                          width: constraint.maxWidth*0.2,
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: CircleAvatar(
+                                radius: constraint.maxWidth*0.07,
+                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                child: FittedBox(
+                                  child: Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}"),
+                                ),
+                            ),
+                          ),
+                        ),
+                ],
+              ),),
+          ),
+
+
         ],
+
+
       );
+
+
+
     });
   }
 }
@@ -174,6 +242,7 @@ class DateTimeLeading extends StatelessWidget{
   final DateTime finishDateTime;
   const DateTimeLeading(this.startDateTime,this.finishDateTime, {Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context){
     return LayoutBuilder(builder: (ctx, constraint){
@@ -222,7 +291,8 @@ class GyoshaDataScoreTable extends StatelessWidget{
   final int row = 10;
   const GyoshaDataScoreTable(this.gyoshaData, {Key? key}) : super(key: key);
 
-  List<TableRow> _getTableRows(ShakaiResultDataObj shakaiData, double resultSpaceWidth, double rateSpaceWidth){
+  List<Table> _getTables(ShakaiResultDataObj shakaiData, double resultSpaceWidth, double rateSpaceWidth,
+      double rankSpaceSize, double nameSpaceSize, double resultSpaceSize, double rateSpaceSize,){
     return gyoshaData.sankashaList.map((sankashaData) {
       SankashaResultDataObj sankashaResultData = shakaiData.sankashaResultMap[sankashaData.sankashaID]!;
 
@@ -246,38 +316,50 @@ class GyoshaDataScoreTable extends StatelessWidget{
         );
       }).toList();
 
-      return TableRow(
-          children: [
-            Container(
-              alignment: Alignment.centerLeft,
-              child: FittedBox(child: Text("$rank位"),),)
-            ,
-            Container(
-              alignment: Alignment.centerLeft,
-              child: FittedBox(
-                child: Text(sankashaData.sankashaName==""? "名無し":sankashaData.sankashaName ,overflow: TextOverflow.ellipsis),
-              )
-            ),
-            Container(
-              alignment: Alignment.centerLeft,
-              child: //Text(outString),
-              Wrap(
-                direction: Axis.horizontal,
-                children: [
+      return Table(
+        columnWidths: <int, TableColumnWidth>{
+          0: FixedColumnWidth(rankSpaceSize),
+          1: FixedColumnWidth(nameSpaceSize),
+          2: FixedColumnWidth(resultSpaceSize),
+          3: FixedColumnWidth(rateSpaceSize),
+        },
+        children: [
+            TableRow(
+            children: [
+                  Container(
+                  alignment: Alignment.centerLeft,
+                    child: FittedBox(child: Text("$rank位"),),)
+                  ,
+                  Container(
+                   alignment: Alignment.centerLeft,
+                   child: FittedBox(
+                   child: Text(sankashaData.sankashaName==""? "名無し":sankashaData.sankashaName ,overflow: TextOverflow.ellipsis),
+                  )
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                   child: //Text(outString),
+                   Wrap(
+                   direction: Axis.horizontal,
+                   children: [
                   ...resultIconsList,
-                ],
-              ),
+                   ],
+                    ),
+                  ),
+                  Container(
+                  //padding: EdgeInsets.symmetric(horizontal: 2),
+                      alignment: Alignment.center,
+                      child: Column(children: [
+                        FittedBox(child: Text("$tekichu本/$total本")),
+                        FittedBox(child: Text(rate),),
+                   ],),
             ),
-            Container(
-              //padding: EdgeInsets.symmetric(horizontal: 2),
-              alignment: Alignment.center,
-              child: Column(children: [
-                FittedBox(child: Text("$tekichu本/$total本")),
-                FittedBox(child: Text(rate),),
-              ],),
-            ),
-          ]
+            ]
+            )
+        ],
       );
+
+
     }).toList();
   }
 
@@ -289,15 +371,21 @@ class GyoshaDataScoreTable extends StatelessWidget{
         double nameSpaceSize = constraint.maxWidth*0.15;
         double resultSpaceSize = constraint.maxWidth*0.6;
         double rateSpaceSize = constraint.maxWidth*0.17;
-      return Table(
-        columnWidths: <int, TableColumnWidth>{
-          0: FixedColumnWidth(rankSpaceSize),
-          1: FixedColumnWidth(nameSpaceSize),
-          2: FixedColumnWidth(resultSpaceSize),
-          3: FixedColumnWidth(rateSpaceSize),
-        },
-        children: [..._getTableRows(shakaiData,resultSpaceSize,rateSpaceSize)],
-      );
+        List<Table> tableData = _getTables(shakaiData,resultSpaceSize,rateSpaceSize,rankSpaceSize, nameSpaceSize, resultSpaceSize, rateSpaceSize);
+        List<Widget> viewData = [];
+        for(Widget item in tableData){
+          viewData.add(item);
+          viewData.add(Divider());
+        }
+      return
+        Column(
+          children: [
+            ...viewData,
+
+
+          ],
+        );
+
     });
 
   }
