@@ -165,9 +165,9 @@ class _GyoshaTypeToggleButton extends ConsumerState<GyoshaTypeToggleButton> {
       child:
       ToggleButtons(
         children: const [
-          Icon(Icons.format_italic),
-          Icon(Icons.format_bold),
-          Icon(Icons.format_underlined)
+          Text("練習"),
+          Text("射会"),
+          Text("試合")
         ],
         isSelected: _toggleList,
         onPressed: (index) {

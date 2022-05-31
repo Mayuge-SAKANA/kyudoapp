@@ -33,6 +33,12 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
     void _deleteSelectedGyoshaData(){
       ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaData.gyoshaID);
     }
+
+    var svgImage = Svg('assets/imgs/SVG/maku.svg',
+      color: Theme.of(context).colorScheme.primaryContainer,
+      size: const Size(1000,89),
+    );
+
     return ConfigurableExpansionTile(
 
 
@@ -47,7 +53,16 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
                   surfaceTintColor: Theme.of(context).colorScheme.primary,
                   elevation: Theme.of(context).cardTheme.elevation??1,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                  child:  MainGyoshaCardHeaderContents(gyoshaData),
+                  child:  Container(child: MainGyoshaCardHeaderContents(gyoshaData),
+                      decoration: BoxDecoration(
+                        image:  DecorationImage(
+                          image: svgImage,
+                          fit: BoxFit.fitWidth,
+                          alignment:  Alignment.topCenter,
+                        ),
+                      ),
+
+                    ),
                 ),
               ),
       ),
@@ -97,87 +112,121 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
     return startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
         "-"+finishDateTime.hour.toString().padLeft(2,'0')+":"+finishDateTime.minute.toString().padLeft(2,'0');
   }
+
+
+
   
   @override
   Widget build(BuildContext context){
     DateTime startDateTime = gyoshaDataObj.gyoshaData.startDateTime;
     DateTime finishDateTime = gyoshaDataObj.gyoshaData.finishDateTime;
+    //var s = svgImage.color
+    var svgImage = Svg('assets/imgs/SVG/maku.svg',
+        color: Theme.of(context).colorScheme.primaryContainer,
+        size: Size(1000,121),
+    );
     return LayoutBuilder(builder: (ctx, constraint){
-      return Column(
+      return Stack(
         children: [
+          Column(
+            children: [
+              SizedBox(
+                height: constraint.maxHeight*0.4,
+                width: constraint.maxWidth,
+                child:  Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(getDateTxt(startDateTime)+" "+ getTimeTxt(startDateTime, finishDateTime),
+                    style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),),
+              ),
+              SizedBox(
+                height: constraint.maxHeight*0.55,
+                width: constraint.maxWidth,
+                child:  Row(
+                  children: [
+                    SizedBox(
+                      width: constraint.maxWidth*0.2,
+                    ),
+                    SizedBox(
+                      width: constraint.maxWidth*0.6,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child:
+                            Column(children: [
+                              SizedBox(
+                                height: constraint.maxHeight*0.35,
+                                width: constraint.maxWidth*0.6,
+                                child:  Center(child:
+                                  Text(gyoshaDataObj.gyoshaData.gyoshaName,style: TextStyle(fontSize: constraint.maxWidth*0.6/16,fontWeight: FontWeight.bold),),
+                                ),
+                              ),
+                               SizedBox(
+                                height: constraint.maxHeight*0.15,
+                                width: constraint.maxWidth*0.6,
+                                 child: FittedBox(child: Text("-% -時間-分",style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),),
+                              )
+                              ,
+                            ],),
 
-            SizedBox(
-              height: constraint.maxHeight*0.4,
-              width: constraint.maxWidth,
-              child:  Container(
-                decoration: BoxDecoration(
-                  image:  DecorationImage(
-                      image: Svg('assets/imgs/SVG/maku.svg',color: Theme.of(context).colorScheme.primaryContainer),
-                      fit: BoxFit.fitWidth,
 
+                      ),
+                    ),
+                    SizedBox(
+                      width: constraint.maxWidth*0.2,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              children: [
+                SizedBox(
+                  height: constraint.maxHeight*0.8,
+                  width: constraint.maxWidth*0.2,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: CircleAvatar(
+                        radius: constraint.maxWidth*0.07,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        child: Padding(
+                          padding: EdgeInsets.all(0),
+                          child:
+                          FittedBox(
+                            child: Text("練"),
+                          ),
+                        )
+                    ),
                   ),
                 ),
-                alignment: Alignment.bottomCenter,
-                child: Text(getDateTxt(startDateTime)+" "+ getTimeTxt(startDateTime, finishDateTime)),),
+                SizedBox(
+                  height: constraint.maxHeight*0.6,
+                  width: constraint.maxWidth*0.6,
+                ),
+                SizedBox(
+                  height: constraint.maxHeight*0.6,
+                  width: constraint.maxWidth*0.2,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: CircleAvatar(
+                      radius: constraint.maxWidth*0.07,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: FittedBox(
+                        child: Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}"),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          SizedBox(
-            height: constraint.maxHeight*0.6,
-            width: constraint.maxWidth,
-            child:  Container(
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                          SizedBox(
-                            height: constraint.maxHeight*0.6,
-                            width: constraint.maxWidth*0.2,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: CircleAvatar(
-                                  radius: constraint.maxWidth*0.07,
-                                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                  backgroundColor: Theme.of(context).colorScheme.primary,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(0),
-                                    child:
-                                    FittedBox(
-                                      child: Text("練"),
-                                    ),
-                                  )
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: constraint.maxHeight*0.6,
-                            width: constraint.maxWidth*0.6,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: FittedBox(child:
-                                Text(gyoshaDataObj.gyoshaData.gyoshaName),
-                                ),
-                            ),
-                          ),
-                        SizedBox(
-                          height: constraint.maxHeight*0.6,
-                          width: constraint.maxWidth*0.2,
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: CircleAvatar(
-                                radius: constraint.maxWidth*0.07,
-                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                child: FittedBox(
-                                  child: Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}"),
-                                ),
-                            ),
-                          ),
-                        ),
-                ],
-              ),),
-          ),
+          )
 
 
         ],
-
 
       );
 

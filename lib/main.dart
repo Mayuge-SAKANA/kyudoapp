@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'widgets/main_gyosha_timeline.dart';
 import 'data/control_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 final gyoshaDatasProvider = StateNotifierProvider<GyoshaDatasNotifier, GyoshaEditManageClass>((ref) {
   return GyoshaDatasNotifier();
@@ -9,7 +10,15 @@ final gyoshaDatasProvider = StateNotifierProvider<GyoshaDatasNotifier, GyoshaEdi
 
 
 //void main() => runApp(const KyudoApp());
-void main() => runApp(const ProviderScope(child: KyudoApp()));
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]).then((_) {
+    runApp(const ProviderScope(child: KyudoApp()));
+  });
+  }
 
 class KyudoApp extends StatelessWidget {
   const KyudoApp({Key? key}) : super(key: key);
