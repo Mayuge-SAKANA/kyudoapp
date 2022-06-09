@@ -27,7 +27,7 @@ class KyudoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kyudo App',
       theme: ThemeData(
-        colorSchemeSeed:  Colors.purple,//Color(0x00c14333),//Colors.blueGrey,
+        colorSchemeSeed:  Color(0x00c14333),//Colors.blueGrey,
         brightness: Brightness.dark,
         useMaterial3: true,
         visualDensity: VisualDensity.adaptivePlatformDensity,

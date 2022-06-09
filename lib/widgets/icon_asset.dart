@@ -28,3 +28,8 @@ Map<ShaResultType, String> shaResultString = {
   ShaResultType.delete: "",
 };
 
+Map<GyoshaType, String> gyoshaTypeString = {
+  GyoshaType.renshu:"練習",
+  GyoshaType.shakai:"射会",
+  GyoshaType.shiai:"試合"
+};

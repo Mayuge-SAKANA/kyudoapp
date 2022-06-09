@@ -28,8 +28,6 @@ class GyoshaEditPage extends ConsumerWidget{
                     return const EditingGyoshaText();
                   })
               );
-
-
             },
             icon: const Icon(Icons.text_snippet),
           ),
