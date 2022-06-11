@@ -55,7 +55,7 @@ class SankashaCardContents extends  ConsumerWidget {
                     }else{
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
                     }
-                  };
+                  }
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
                   Navigator.pop(context);
                   //OKを押したあとの処理
@@ -103,9 +103,6 @@ class SankashaCardContents extends  ConsumerWidget {
                 icon: const Icon(Icons.delete),
               ),
             ),
-
-
-
           ],
         ),
       );

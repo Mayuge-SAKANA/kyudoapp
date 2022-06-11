@@ -9,16 +9,21 @@ import '../main.dart';
 import 'edit_gyosha_page.dart';
 import 'icon_asset.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-
-
-@immutable
-class GyoshaMainDataExpansionTile extends ConsumerWidget{
+class GyoshaMainDataExpansionTile extends ConsumerStatefulWidget{
   final String gyoshaID;
-  const GyoshaMainDataExpansionTile(this.gyoshaID, {Key? key}) : super(key: key);
+  const GyoshaMainDataExpansionTile(this.gyoshaID,{Key? key}) : super(key: key);
+  @override
+  _GyoshaMainDataExpansionTile createState() => _GyoshaMainDataExpansionTile();
+}
+
+class _GyoshaMainDataExpansionTile extends ConsumerState<GyoshaMainDataExpansionTile>{
+  double opacityValue = 0;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    String gyoshaID = widget.gyoshaID;
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var gyoshaDataObj = gyoshaDataList.where((element) => element.gyoshaID==gyoshaID).toList()[0];
@@ -34,12 +39,17 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
       ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaDataObj.gyoshaID);
     }
 
-    var svgImage = Svg('assets/imgs/SVG/maku.svg',
-      color: Theme.of(context).colorScheme.primaryContainer,
-      size: const Size(1000,89),
+    var svgImage = SvgPicture.asset('assets/imgs/SVG/maku.svg',
+      color: Theme.of(context).colorScheme.primary.withOpacity(opacityValue),
+      width: MediaQuery.of(context).size.width*0.95,
     );
 
     return ConfigurableExpansionTile(
+      onExpansionChanged: (state){
+        setState((){
+          state?opacityValue = 0.6:opacityValue=0;
+        });
+      },
       header: SizedBox(
           height: MediaQuery.of(context).size.height*0.15,
           width: MediaQuery.of(context).size.width*0.95,
@@ -52,14 +62,13 @@ class GyoshaMainDataExpansionTile extends ConsumerWidget{
                   elevation: Theme.of(context).cardTheme.elevation??1,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   child:  Container(
-                    child: MainGyoshaCardHeaderContents(gyoshaDataObj),
-                    decoration: BoxDecoration(
-                      image:  DecorationImage(
-                        image: svgImage,
-                        fit: BoxFit.fitWidth,
-                        alignment:  Alignment.topCenter,
-                        ),
-                      ),
+                    alignment: Alignment.topCenter,
+                    child: Stack(
+                      children: [
+                        svgImage,
+                        MainGyoshaCardHeaderContents(gyoshaDataObj),
+                      ],
+                    ),
                     ),
                   ),
                 ),
@@ -123,7 +132,7 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
           Column(
             children: [
               SizedBox(
-                height: constraint.maxHeight*0.4,
+                height: constraint.maxHeight*0.35,
                 width: constraint.maxWidth,
                 child:  Container(
                   alignment: Alignment.bottomCenter,
@@ -179,10 +188,10 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
                     alignment: Alignment.center,
                     child: CircleAvatar(
                         radius: constraint.maxWidth*0.07,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                         child: Padding(
-                          padding: EdgeInsets.all(0),
+                          padding: const EdgeInsets.all(0),
                           child:
                           FittedBox(
                             child: Text(gyoshaTypeString[gyoshaDataObj.gyoshaData.gyoshaType]!.substring(0,1)),
@@ -202,8 +211,8 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
                     alignment: Alignment.center,
                     child: CircleAvatar(
                       radius: constraint.maxWidth*0.07,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: FittedBox(
                         child: Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}"),
                       ),
@@ -408,7 +417,7 @@ class GyoshaDataScoreTable extends StatelessWidget{
         List<Widget> viewData = [];
         for(Widget item in tableData){
           viewData.add(item);
-          viewData.add(Divider());
+          viewData.add(const Divider());
         }
       return
         Column(
