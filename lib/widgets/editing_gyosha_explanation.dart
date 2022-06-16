@@ -18,7 +18,7 @@ class EditingGyoshaText extends ConsumerWidget{
           ElevatedButton(
               onPressed: (){
                 if(tempText!="") editingGyoshaData.gyoshaData.memoText = tempText;
-                ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                 Navigator.pop(context);
 
               },

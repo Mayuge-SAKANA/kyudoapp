@@ -3,6 +3,15 @@ import 'widgets/main_gyosha_timeline.dart';
 import 'data/control_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'data/db_data.dart';
+
+
+final recordDBProvider = StateNotifierProvider<DataDBNotifier, RecordDB>(
+    (ref){
+      return DataDBNotifier("data_db.db");
+    }
+);
+
 
 final gyoshaDatasProvider = StateNotifierProvider<GyoshaDatasNotifier, GyoshaEditManageClass>((ref) {
   return GyoshaDatasNotifier();
@@ -20,15 +29,16 @@ void main() {
   });
   }
 
-class KyudoApp extends StatelessWidget {
+class KyudoApp extends ConsumerWidget {
   const KyudoApp({Key? key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    ref.read(gyoshaDatasProvider.notifier).loadGyoshaList(ref);
     return MaterialApp(
       title: 'Kyudo App',
       theme: ThemeData(
         colorSchemeSeed:  Color(0x00c14333),//Colors.blueGrey,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         useMaterial3: true,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'NotoSansJP',

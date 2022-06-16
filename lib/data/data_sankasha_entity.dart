@@ -13,7 +13,8 @@ class SankashaData extends DataAbstClass{
       'sankashaID': sankashaID,
       'gyoshaID': gyoshaID,
       'sankashaName': sankashaName,
-      'isAppUser': isAppUser,
+      'isAppUser': isAppUser?1:0,
+      'sankashaNumber': sankashaNumber,
     };
   }
 }

@@ -54,7 +54,7 @@ class GyoshaEditPage extends ConsumerWidget{
             }
           }
           editingGyoshaData.addTachi();
-          ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+          ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
 
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,

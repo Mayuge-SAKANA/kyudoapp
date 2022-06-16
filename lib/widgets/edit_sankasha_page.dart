@@ -80,7 +80,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
                     }
                   }
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                   Navigator.pop(context);
                   //OKを押したあとの処理
                 },
@@ -90,7 +90,6 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
         },
       );
     }
-
 
     return Scaffold(
       appBar: AppBar(
@@ -115,7 +114,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
                     newIndex -= 1;
                   }
                   sankashaList.insert(newIndex,sankashaList.removeAt(oldIndex));
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                 });
               },
             ),

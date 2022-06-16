@@ -15,7 +15,7 @@ class GyoshaData extends DataAbstClass {
 
   GyoshaData(this.gyoshaID,this.mainEditorName, this.gyoshaName,
        this.startDateTime,this.finishDateTime,
-      {this.gyoshaType = GyoshaType.renshu,this.gyoshaState = GyoshaState.offline});
+      {this.gyoshaType = GyoshaType.renshu,this.gyoshaState = GyoshaState.offline, this.memoText});
 
   @override
   Map<String, dynamic> toMap() {

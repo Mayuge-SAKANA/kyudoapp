@@ -8,7 +8,6 @@ import '../data/data_gyosha_object.dart';
 import '../main.dart';
 import 'edit_gyosha_page.dart';
 import 'icon_asset.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GyoshaMainDataExpansionTile extends ConsumerStatefulWidget{
@@ -36,7 +35,7 @@ class _GyoshaMainDataExpansionTile extends ConsumerState<GyoshaMainDataExpansion
       );
     }
     void _deleteSelectedGyoshaData(){
-      ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaDataObj.gyoshaID);
+      ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaDataObj.gyoshaID,ref);
     }
 
     var svgImage = SvgPicture.asset('assets/imgs/SVG/maku.svg',
@@ -125,6 +124,7 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
   Widget build(BuildContext context){
     DateTime startDateTime = gyoshaDataObj.gyoshaData.startDateTime;
     DateTime finishDateTime = gyoshaDataObj.gyoshaData.finishDateTime;
+
 
     return LayoutBuilder(builder: (ctx, constraint){
       return Stack(

@@ -41,6 +41,8 @@ dependencies:
   flutter_svg: ^1.1.0
   flutter_svg_provider: ^1.0.3
   get: ^4.6.5
+  sqflite: ^2.0.2+1
+  sqflite_common_ffi: ^2.1.1
 
 dev_dependencies:
   flutter_test:

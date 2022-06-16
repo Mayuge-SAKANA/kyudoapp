@@ -13,8 +13,9 @@ class GyoshaDataObj {
   List<TachiDataObj> tachiList = []; //立集合
   List<SankashaData> sankashaList = [];//参加者リスト
   bool isAppUserIsSankasha = true;
-  String appUserID = "";
-  SankashaData? appUserData;
+
+  SankashaData? get appUserData=>getAppUserData();
+  String get appUserID =>appUserData==null? "":appUserData!.sankashaID;
   String get gyoshaID=> gyoshaData.gyoshaID;
   int get totalTekichu =>countUserAtariTotal(appUserID);
   int get totalSha =>countUserShaTotal(appUserID);
@@ -26,11 +27,13 @@ class GyoshaDataObj {
   ShakaiResultDataObj get shakaiResultDataObj => ShakaiResultDataObj(this);
 
   GyoshaDataObj(mainEditorName, gyoshaName, gyoshaType, startDateTime,finishDateTime,
-  {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1}):
-      gyoshaData = GyoshaData(generateID('G',_gyoshaInstanceNumber+1),mainEditorName, gyoshaName, startDateTime, finishDateTime)
+  {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true}):
+      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('G',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState)
   {
-    appUserData = addSankasha(mainEditorName,isAppUser:true);
-    appUserID = appUserData!.sankashaID;
+    if(newFlag){
+      addSankasha(mainEditorName,isAppUser:true);
+    }
+
     if(startCountNumber>-1) _gyoshaInstanceNumber = startCountNumber;
     _gyoshaInstanceNumber++;
   }
@@ -38,10 +41,17 @@ class GyoshaDataObj {
   SankashaData addSankasha(String newSankashaName,{bool isAppUser=false}){
     _sankashaInstanceNumber++;
     String newSankashaID = gyoshaID+generateID('U', _sankashaInstanceNumber);
-    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length-1);
+    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length);
     sankashaList.add(newSankasha);
     return newSankasha;
   }
+
+  SankashaData createSankasha(String newSankashaName,{bool isAppUser=false}){
+    _sankashaInstanceNumber++;
+    String newSankashaID = gyoshaID+generateID('U', _sankashaInstanceNumber);
+    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length);
+    return newSankasha;
+    }
 
   void removeSankashaAt(String sankashaID){
     if(appUserID == sankashaID){
@@ -59,6 +69,15 @@ class GyoshaDataObj {
     });
   }
 
+  SankashaData? getAppUserData(){
+    try {
+      return sankashaList.firstWhere((element) =>
+      element.isAppUser == true);
+    }catch(e){
+      return null;
+    }
+  }
+
   void deleteAppUserData(){
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
@@ -69,7 +88,8 @@ class GyoshaDataObj {
 
   void addAppUserToSankasha(){
     if(isAppUserIsSankasha==false) {
-      sankashaList = [appUserData!,...sankashaList];
+      var newSankasha = createSankasha("ユーザ",isAppUser: true);
+      sankashaList = [newSankasha,...sankashaList];
     }
     isAppUserIsSankasha = true;
     setSankashaIndex();

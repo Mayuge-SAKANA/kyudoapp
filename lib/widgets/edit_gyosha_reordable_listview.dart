@@ -46,7 +46,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                   child: IconButton(
                     onPressed: () {
                       editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID);
-                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                     },
                     icon: const Icon(Icons.delete),
                   ),
@@ -59,7 +59,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
       onReorder: (int oldIndex, int newIndex) {
         _onReorder(editingTachiList, oldIndex, newIndex);
         editingGyoshaData.setTachiIndex();
-        ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+        ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
       },
       proxyDecorator: (widget, _, __) {
         return Opacity(opacity: 0.5, child: widget);
@@ -94,7 +94,7 @@ class ScoreEditSpace extends ConsumerWidget {
     TachiDataObj editingTachi = editingGyoshaData.tachiList[index];
 
     void _setData(){
-      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
 
     return LayoutBuilder(builder: (context, constrain){
@@ -162,7 +162,7 @@ class AddPopUpMenuButton extends ConsumerWidget{
     List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
     TachiDataObj editingTachi = editingGyoshaData.tachiList[index];
     void _setData(){
-      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
     return PopupMenuButton(
       icon: const Icon(Icons.add),

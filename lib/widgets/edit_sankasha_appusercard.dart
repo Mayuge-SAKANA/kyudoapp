@@ -39,7 +39,7 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
 
             SizedBox(
               width:constrain.maxWidth*0.6,
-              child: Text("あなた："+editingGyoshaData.appUserData!.sankashaName),
+              child: Text("あなた："),
             ),
             SizedBox(
               width: constrain.maxWidth*0.35,
@@ -62,7 +62,7 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
                       }else{
                         editingGyoshaData.deleteAppUserData();
                       }
-                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                     }
                   });
                 },

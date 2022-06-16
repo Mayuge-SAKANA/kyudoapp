@@ -110,7 +110,7 @@ class _GyoshaNameTextFormField extends ConsumerState<GyoshaNameTextFormField>{
                 child: const Text('OK'),
                 onPressed: () {
                   if(tempText!="") gyoshaData.gyoshaName = tempText;
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                   Navigator.pop(context);
                   //OKを押したあとの処理
                 },
@@ -179,7 +179,7 @@ class _GyoshaTypeToggleButton extends ConsumerState<GyoshaTypeToggleButton> {
                 _toggleList[i] = false;
               }
               gyoshaData.gyoshaType = GyoshaType.values[index];
-              ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+              ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
             }
           });
         },
@@ -206,7 +206,7 @@ class StartTimeTextColumn extends ConsumerWidget{
                   if(gyoshaData.finishDateTime.isBefore(gyoshaData.startDateTime)){
                     gyoshaData.finishDateTime = gyoshaData.startDateTime;
                   }
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
 
                 }, currentTime: gyoshaData.startDateTime, locale: LocaleType.jp);
           },
@@ -235,7 +235,7 @@ class FinishTimeTextColumn extends ConsumerWidget{
                 maxTime: DateTime(2100, 5, 1), onChanged: (date) {
                 }, onConfirm: (date) {
                   gyoshaData.finishDateTime = date;
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                 }, currentTime: gyoshaData.finishDateTime, locale: LocaleType.jp);
           },
           child: Column(

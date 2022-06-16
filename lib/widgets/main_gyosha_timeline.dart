@@ -11,6 +11,7 @@ class MainView extends ConsumerWidget {
   @override
   Widget build(BuildContext context,WidgetRef ref){
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
+
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var _scrollController = ScrollController();
 
@@ -20,7 +21,7 @@ class MainView extends ConsumerWidget {
       var gyoshaData = GyoshaDataObj("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
       gyoshaData.addTachi();
 
-      ref.read(gyoshaDatasProvider.notifier).addGyoshaData(gyoshaData);
+      ref.read(gyoshaDatasProvider.notifier).addGyoshaData(gyoshaData,ref);
     }
 
     return Scaffold(

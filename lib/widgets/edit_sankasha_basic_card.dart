@@ -56,7 +56,7 @@ class SankashaCardContents extends  ConsumerWidget {
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
                     }
                   }
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                   Navigator.pop(context);
                   //OKを押したあとの処理
                 },
@@ -98,7 +98,7 @@ class SankashaCardContents extends  ConsumerWidget {
                     editingGyoshaData.isAppUserIsSankasha = false;
                   }
                   editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID);
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData);
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                 },
                 icon: const Icon(Icons.delete),
               ),
