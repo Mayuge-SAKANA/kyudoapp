@@ -18,10 +18,10 @@ class MainView extends ConsumerWidget {
     void _createNewGyoshaData(){
       DateTime startTime = DateTime.now();
       String initialGyoshaName = "今日の行射";
-      var gyoshaData = GyoshaDataObj("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime);
-      gyoshaData.addTachi();
+      var gyoshaData = GyoshaDataObj("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime,
+          recordDB: ref.read(recordDBProvider));
+      ref.read(gyoshaDatasProvider.notifier).createAndAddGyoshaData(gyoshaData,ref);
 
-      ref.read(gyoshaDatasProvider.notifier).addGyoshaData(gyoshaData,ref);
     }
 
     return Scaffold(

@@ -1,7 +1,7 @@
 import 'data_define.dart';
 
 class GyoshaData extends DataAbstClass {
-  final String gyoshaID; //行射固有ID
+  String gyoshaID; //行射固有ID
   final String mainEditorName; // 編集者名
   GyoshaState gyoshaState; //オンラインオフライン
   String gyoshaName; //行射タイトル

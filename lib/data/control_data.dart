@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kyodoapp/data/db_define.dart';
 import 'data_gyosha_object.dart';
 import '../main.dart';
+import 'data_define.dart';
 
 @immutable
 class GyoshaEditManageClass{
@@ -29,11 +31,26 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
       gyoshaDataList:[]),
   );
 
-  void addGyoshaData(GyoshaDataObj gyoshaDataObj, WidgetRef ref){
+
+  void createAndAddGyoshaData(GyoshaDataObj gyoshaDataObj, WidgetRef ref)async{
+
+
+    RecordDB recordDB = ref.watch(recordDBProvider);
+
+    var dbId = await recordDB!.insertData('gyosha_data', gyoshaDataObj.gyoshaData);
+
+    String newGyoshaID = generateID('G', dbId);
+    print("newGyoshaID$newGyoshaID");
+    gyoshaDataObj.gyoshaData.gyoshaID = newGyoshaID;
+    gyoshaDataObj.sankashaList[0].gyoshaID = newGyoshaID;
+    gyoshaDataObj.addTachi(recordDB: recordDB);
+
     List<GyoshaDataObj> newList = [...state.gyoshaDataList,gyoshaDataObj];
     state = state.copyWith(
         gyoshaDataList: newList);
-    ref.watch(recordDBProvider).insertGyoshaData(gyoshaDataObj);
+
+    await recordDB!.updateData('gyosha_data', 'id', dbId, gyoshaDataObj.gyoshaData);
+
   }
 
   void removeGyoshaData(String gyoshaID,WidgetRef ref) async{

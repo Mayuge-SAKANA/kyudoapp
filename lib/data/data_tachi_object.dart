@@ -1,7 +1,10 @@
+import 'db_define.dart';
+
 import 'data_define.dart';
 import 'data_sha_entity.dart';
 import 'data_tachi_entity.dart';
 import 'data_sankasha_entity.dart';
+
 
 class TachiDataObj {
   final TachiData tachiData;
@@ -16,18 +19,32 @@ class TachiDataObj {
   TachiDataObj(tachiID,  gyoshaID,this.sankashaData,{tachiNumber = 0}):
   tachiData = TachiData(tachiID,  gyoshaID, sankashaData.sankashaID,tachiNumber: tachiNumber);
 
-  void createSha(ShaResultType shaResult){
+  void addSha(ShaResultType shaResult ,{RecordDB? db}) async{
+    ShaData shaData;
+
     _shaInstanceNumber++;
-    String shaID = tachiID+generateID('S', _shaInstanceNumber);
-    var shaData = ShaData(shaID,shaList.length+1,shaResult,tachiID);
+    String shaID = tachiID+generateID('TEST', _shaInstanceNumber);
+    shaData = ShaData(shaID,shaList.length+1,shaResult,tachiID);
     shaList.add(shaData);
+
+    if(db!=null){
+      var dbId = await db.insertData('sha_data', shaData);
+      String shaID = tachiID+generateID('S', dbId);
+      shaData.shaID = shaID;
+      db.updateData('sha_data', 'id', dbId, shaData);
+      shaList.last.shaID =shaID;
+    }
+
   }
 
   int countAtariSha(){
     return shaList.where((element) => element.shaResult==ShaResultType.atari).length;
   }
 
-  void removeShaAt(String shaID){
+  void removeShaAt(String shaID,{RecordDB? db}){
+    if(db!=null){
+      db.deleteData('sha_table', 'shaID', shaID);
+    }
     return shaList.removeWhere((element) => element.shaID==shaID);
   }
 

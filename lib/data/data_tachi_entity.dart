@@ -1,7 +1,7 @@
 import 'data_define.dart';
 
 class TachiData extends DataAbstClass {
-  final String tachiID; //立固有ID
+  String tachiID; //立固有ID
   int tachiNumber; //練習中何番目の立ちか
   final String gyoshaID; //行射固有ID
   String sankashaID;

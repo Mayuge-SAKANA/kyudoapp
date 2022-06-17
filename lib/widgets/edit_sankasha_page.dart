@@ -17,6 +17,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
   @override
   void initState() {
     super.initState();
+
     bool isAppUserIsSankasha = ref.read(gyoshaDatasProvider).getEditingGyoshaData().isAppUserIsSankasha;
     getToggleList(isAppUserIsSankasha);
   }
@@ -75,7 +76,7 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
                 onPressed: () {
                   if(tempText!=""){
                     if(initName==""){
-                      editingGyoshaData.addSankasha(tempText);
+                      editingGyoshaData.addSankasha(tempText,recordDB:ref.read(recordDBProvider));
                     }else{
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
                     }

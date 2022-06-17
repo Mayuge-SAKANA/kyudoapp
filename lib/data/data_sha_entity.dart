@@ -1,7 +1,7 @@
 import 'data_define.dart';
 
 class ShaData extends DataAbstClass{
-  final String shaID; //射固有ID
+  String shaID; //射固有ID
   final int shaNumber; //矢が何本目か
   ShaResultType shaResult; //的中結果
   final String tachiID; //立固有ID

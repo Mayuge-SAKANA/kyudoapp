@@ -2,7 +2,7 @@ import 'data_define.dart';
 import 'data_gyosha_entity.dart';
 import 'data_sankasha_entity.dart';
 import 'data_tachi_object.dart';
-
+import 'db_define.dart';
 
 class GyoshaDataObj {
   static int _gyoshaInstanceNumber = 0;
@@ -26,49 +26,59 @@ class GyoshaDataObj {
 
   ShakaiResultDataObj get shakaiResultDataObj => ShakaiResultDataObj(this);
 
+
   GyoshaDataObj(mainEditorName, gyoshaName, gyoshaType, startDateTime,finishDateTime,
-  {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true}):
+  {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true,RecordDB? recordDB}):
       gyoshaData = GyoshaData(gyoshaID == "" ?generateID('G',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState)
   {
+
+
     if(newFlag){
-      addSankasha(mainEditorName,isAppUser:true);
+      addSankasha(mainEditorName,isAppUser:true,recordDB: recordDB);
     }
 
     if(startCountNumber>-1) _gyoshaInstanceNumber = startCountNumber;
     _gyoshaInstanceNumber++;
   }
 
-  SankashaData addSankasha(String newSankashaName,{bool isAppUser=false}){
+  Future<SankashaData> addSankasha(String newSankashaName,{bool isAppUser=false,RecordDB? recordDB})async{
     _sankashaInstanceNumber++;
-    String newSankashaID = gyoshaID+generateID('U', _sankashaInstanceNumber);
+    String newSankashaID = generateID('TEST', _sankashaInstanceNumber);
     var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length);
     sankashaList.add(newSankasha);
+
+    if(recordDB!=null){
+      var dbId = await recordDB!.insertData('sankasha_data', newSankasha);
+      String newSankashaID = generateID('TEST', dbId);
+      newSankasha.sankashaID = newSankashaID;
+      recordDB!.updateData('sankasha_data', 'id', dbId, newSankasha);
+      sankashaList.last.sankashaID = newSankashaID;
+    }
     return newSankasha;
   }
 
-  SankashaData createSankasha(String newSankashaName,{bool isAppUser=false}){
-    _sankashaInstanceNumber++;
-    String newSankashaID = gyoshaID+generateID('U', _sankashaInstanceNumber);
-    var newSankasha = SankashaData(newSankashaID, gyoshaID, isAppUser, sankashaName: newSankashaName, sankashaNumber: sankashaList.length);
-    return newSankasha;
-    }
-
-  void removeSankashaAt(String sankashaID){
+  void removeSankashaAt(String sankashaID,{RecordDB? recordDB}){
     if(appUserID == sankashaID){
       isAppUserIsSankasha=false;
     }
+
     sankashaList = [...sankashaList.where((item){return item.sankashaID!=sankashaID;})];
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
-    setTachiIndex();
-    setSankashaIndex();
-  }
+    if(recordDB!=null){
+      recordDB!.deleteData('sankasha_data', 'sankashaID', sankashaID);
+      recordDB!.deleteData('tachi_data', 'sankashaID', sankashaID);
+    }
 
+    setTachiIndex(recordDB:recordDB);
+    setSankashaIndex(recordDB:recordDB);
+
+
+  }
   SankashaData getSankashaAt(String sankashaID){
     return sankashaList.firstWhere((element){
       return element.sankashaID==sankashaID;
     });
   }
-
   SankashaData? getAppUserData(){
     try {
       return sankashaList.firstWhere((element) =>
@@ -77,54 +87,84 @@ class GyoshaDataObj {
       return null;
     }
   }
+  void deleteAppUserData({RecordDB? recordDB}){
 
-  void deleteAppUserData(){
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
     isAppUserIsSankasha = false;
-    setTachiIndex();
-    setSankashaIndex();
-  }
+    if(recordDB!=null){
+      recordDB!.deleteData('sankasha_data', 'sankashaID', appUserID);
+      recordDB!.deleteData('tachi_data', 'sankashaID', appUserID);
+    }
 
-  void addAppUserToSankasha(){
+    setTachiIndex(recordDB: recordDB);
+    setSankashaIndex(recordDB: recordDB);
+  }
+  void addAppUserToSankasha({RecordDB? recordDB}){
     if(isAppUserIsSankasha==false) {
-      var newSankasha = createSankasha("ユーザ",isAppUser: true);
-      sankashaList = [newSankasha,...sankashaList];
+      addSankasha("ユーザ",isAppUser: true);
     }
     isAppUserIsSankasha = true;
-    setSankashaIndex();
+    setSankashaIndex(recordDB: recordDB);
   }
-
-  void setSankashaIndex(){
+  void setSankashaIndex({RecordDB? recordDB}){
     sankashaList = List.generate(sankashaList.length, (index) {
       SankashaData sankashaData = sankashaList[index];
       sankashaData.sankashaNumber = index;
+      if(recordDB!=null){
+        recordDB!.updateData('sankasha_data', 'sankashaID', sankashaData.sankashaID, sankashaData);
+      }
       return sankashaData;
     });
   }
 
-  void setTachiIndex(){
+  void setTachiIndex({RecordDB? recordDB}){
     tachiList = List.generate(tachiList.length, (index){
       TachiDataObj tachiDataObj = tachiList[index];
       tachiDataObj.tachiData.tachiNumber = index;
+      if(recordDB!=null){
+        recordDB!.updateData('tachi_data', 'tachiID', tachiDataObj.tachiID, tachiDataObj.tachiData);
+      }
       return tachiDataObj;
     }).toList();
   }
 
-  void addTachi({bool addAll = true}){
+  //編集画面でaddした時のロジックをこっちに持ってくる必要がある
+
+  void addTachi({bool addAll = true,RecordDB? recordDB})async{
     if(addAll==true){
       for(SankashaData sankashaData in sankashaList){
+
         _tachiInstanceNumber++;
-        String tachiID = gyoshaID+generateID('T', _tachiInstanceNumber);
-        var tachiData = TachiDataObj(tachiID, gyoshaID,sankashaData, tachiNumber: tachiList.length-1);
-        tachiList.add(tachiData);
+
+        String tachiID = generateID('TEST', _tachiInstanceNumber);
+        print("bef"+tachiID);
+        var tachiDataObj = TachiDataObj(tachiID, gyoshaID,sankashaData, tachiNumber: tachiList.length-1);
+        tachiList.add(tachiDataObj);
+        print(recordDB);
+
+        if(recordDB!=null){
+
+          var dbId = await recordDB!.insertData('tachi_data', tachiDataObj.tachiData);
+          String newTachiID = generateID('T', dbId);
+          tachiDataObj.tachiData.tachiID = newTachiID;
+          tachiList.last.tachiData.tachiID = newTachiID;
+          await recordDB!.updateData('tachi_data', 'id', dbId, tachiDataObj.tachiData);
+
+          print("new"+newTachiID);
+        }
+
       }
     }
   }
-  void removeTachiAt(String tachiID){
+  void removeTachiAt(String tachiID,{RecordDB? recordDB}){
     tachiList = tachiList.where((item)=>item.tachiID!=tachiID).toList();
+    if(recordDB!=null){
+      recordDB!.deleteData('tachi_data', 'tachiID', tachiID);
+    }
     setTachiIndex();
   }
+
   int countUserAtariTotal(String sankashaID){
     return tachiList.where((element) => element.sankashaData.sankashaID==sankashaID).fold(0, (previousValue, element)=>previousValue+element.atariShaNum);
   }

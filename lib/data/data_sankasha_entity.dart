@@ -1,8 +1,8 @@
 import 'data_define.dart';
 
 class SankashaData extends DataAbstClass{
-  final String sankashaID;
-  final String gyoshaID;
+  String sankashaID;
+  String gyoshaID;
   String sankashaName;
   bool isAppUser;
   int sankashaNumber;

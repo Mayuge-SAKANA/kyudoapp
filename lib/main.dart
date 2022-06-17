@@ -3,10 +3,10 @@ import 'widgets/main_gyosha_timeline.dart';
 import 'data/control_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'data/db_data.dart';
+import 'data/db_local.dart';
 
 
-final recordDBProvider = StateNotifierProvider<DataDBNotifier, RecordDB>(
+final recordDBProvider = StateNotifierProvider<DataDBNotifier, LocalRecordDB>(
     (ref){
       return DataDBNotifier("data_db.db");
     }

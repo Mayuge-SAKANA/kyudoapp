@@ -58,9 +58,9 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
                         _toggleList[i] = false;
                       }
                       if(_toggleList[0]==true){
-                        editingGyoshaData.addAppUserToSankasha();
+                        editingGyoshaData.addAppUserToSankasha(recordDB:ref.read(recordDBProvider));
                       }else{
-                        editingGyoshaData.deleteAppUserData();
+                        editingGyoshaData.deleteAppUserData(recordDB:ref.read(recordDBProvider));
                       }
                       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                     }

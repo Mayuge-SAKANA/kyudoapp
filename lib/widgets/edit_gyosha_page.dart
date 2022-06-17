@@ -48,12 +48,12 @@ class GyoshaEditPage extends ConsumerWidget{
           for(int i = editingTachiList.length-1; i>-1; i--){
             if(deleteStopFlag==true)break;
             if(editingTachiList[i].shaList.isEmpty){
-              editingGyoshaData.removeTachiAt(editingTachiList[i].tachiID);
+              editingGyoshaData.removeTachiAt(editingTachiList[i].tachiID,recordDB:ref.read(recordDBProvider));
             }else{
               deleteStopFlag=true;
             }
           }
-          editingGyoshaData.addTachi();
+          editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
           ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
 
           _scrollController.animateTo(

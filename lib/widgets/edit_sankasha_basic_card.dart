@@ -51,7 +51,7 @@ class SankashaCardContents extends  ConsumerWidget {
                 onPressed: () {
                   if(tempText!=""){
                     if(initName==""){
-                      editingGyoshaData.addSankasha(tempText);
+                      editingGyoshaData.addSankasha(tempText,recordDB:ref.read(recordDBProvider));
                     }else{
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
                     }
@@ -97,7 +97,7 @@ class SankashaCardContents extends  ConsumerWidget {
                   if(sankashaList[index].isAppUser==true){
                     editingGyoshaData.isAppUserIsSankasha = false;
                   }
-                  editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID);
+                  editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID,recordDB:ref.read(recordDBProvider));
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                 },
                 icon: const Icon(Icons.delete),

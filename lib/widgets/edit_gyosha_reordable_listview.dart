@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kyodoapp/data/db_define.dart';
 import '../main.dart';
 import '../data/data_define.dart';
 import '../data/data_gyosha_object.dart';
@@ -45,7 +46,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                   height: dataHeight,
                   child: IconButton(
                     onPressed: () {
-                      editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID);
+                      editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID,recordDB:ref.read(recordDBProvider));
                       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                     },
                     icon: const Icon(Icons.delete),
@@ -161,6 +162,8 @@ class AddPopUpMenuButton extends ConsumerWidget{
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
     List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
     TachiDataObj editingTachi = editingGyoshaData.tachiList[index];
+    RecordDB db = ref.read(recordDBProvider);
+
     void _setData(){
       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
@@ -174,12 +177,12 @@ class AddPopUpMenuButton extends ConsumerWidget{
         if(result==ShaResultType.delete){
           editingTachi.shaList.removeAt(editingTachi.shaList.length-1);
           _setData();
-        }else{
-          editingTachi.createSha(result);
+        }else {
+          editingTachi.addSha(result, db: db);
           _setData();
         }
         if(index==editingTachiList.length-1){
-          editingGyoshaData.addTachi();
+          editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
 
           DateTime now = DateTime.now();
           if(now.isAfter(editingGyoshaData.gyoshaData.finishDateTime)){
