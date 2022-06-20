@@ -8,19 +8,17 @@ import 'main_gyosha_card.dart';
 
 class MainView extends ConsumerWidget {
   const MainView({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context,WidgetRef ref){
+  Widget build(BuildContext context,WidgetRef ref) {
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
 
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var _scrollController = ScrollController();
 
     void _createNewGyoshaData(){
-      DateTime startTime = DateTime.now();
-      String initialGyoshaName = "今日の行射";
-      var gyoshaData = GyoshaDataObj("太刀魚魚",initialGyoshaName,GyoshaType.renshu,startTime,startTime,
-          recordDB: ref.read(recordDBProvider));
-      ref.read(gyoshaDatasProvider.notifier).createAndAddGyoshaData(gyoshaData,ref);
+
+      ref.read(gyoshaDatasProvider.notifier).createAndAddGyoshaData(ref);
 
     }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:configurable_expansion_tile_null_safety/configurable_expansion_tile_null_safety.dart';
+import 'package:kyodoapp/data/control_appuserdata.dart';
 
 import '../data/control_data.dart';
 import '../data/data_define.dart';
@@ -9,6 +10,7 @@ import '../main.dart';
 import 'edit_gyosha_page.dart';
 import 'icon_asset.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:share/share.dart';
 
 class GyoshaMainDataExpansionTile extends ConsumerStatefulWidget{
   final String gyoshaID;
@@ -36,6 +38,10 @@ class _GyoshaMainDataExpansionTile extends ConsumerState<GyoshaMainDataExpansion
     }
     void _deleteSelectedGyoshaData(){
       ref.read(gyoshaDatasProvider.notifier).removeGyoshaData(gyoshaDataObj.gyoshaID,ref);
+    }
+
+    String _getResultString(){
+      return gyoshaDataObj.shakaiResultDataObj.generateResultString(ref.watch(userDatasProvider).userName);
     }
 
     var svgImage = SvgPicture.asset('assets/imgs/SVG/maku.svg',
@@ -86,7 +92,7 @@ class _GyoshaMainDataExpansionTile extends ConsumerState<GyoshaMainDataExpansion
               //SizedBox.fromSize(size: Size(0, MediaQuery.of(context).size.height*0.01),),
               GyoshaDataScoreTable(gyoshaDataObj),
 
-              MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData),
+              MainGyoshaCardButtonBar(_moveToEditPage,_deleteSelectedGyoshaData,_getResultString),
             ],
           ),
         ),
@@ -119,12 +125,16 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
     return startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
         "-"+finishDateTime.hour.toString().padLeft(2,'0')+":"+finishDateTime.minute.toString().padLeft(2,'0');
   }
+  
+  
 
   @override
   Widget build(BuildContext context){
     DateTime startDateTime = gyoshaDataObj.gyoshaData.startDateTime;
     DateTime finishDateTime = gyoshaDataObj.gyoshaData.finishDateTime;
 
+    int totalMinutes = gyoshaDataObj.calcGyoshaTime().inMinutes;
+    String tekichuRateString = gyoshaDataObj.totalSha==0?"-":(100*gyoshaDataObj.totalTekichu/gyoshaDataObj.totalSha).toStringAsFixed(1);
 
     return LayoutBuilder(builder: (ctx, constraint){
       return Stack(
@@ -163,7 +173,8 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
                                SizedBox(
                                 height: constraint.maxHeight*0.15,
                                 width: constraint.maxWidth*0.6,
-                                 child: FittedBox(child: Text("-% -時間-分",style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),),
+                                 child: FittedBox(child: Text("$tekichuRateString% ${(totalMinutes/60).floor()}時間${totalMinutes%60}分",
+                                   style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),),
                               ),
                             ],),
                       ),
@@ -231,7 +242,8 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
 class MainGyoshaCardButtonBar extends StatelessWidget{
   final VoidCallback _moveToEditPage;
   final VoidCallback _deleteSelectedGyoshaData;
-  const MainGyoshaCardButtonBar(this._moveToEditPage,this._deleteSelectedGyoshaData,{Key? key}) : super(key: key);
+  final Function _getResultString;
+  const MainGyoshaCardButtonBar(this._moveToEditPage,this._deleteSelectedGyoshaData,this._getResultString,{Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +267,23 @@ class MainGyoshaCardButtonBar extends StatelessWidget{
                 padding: EdgeInsets.symmetric(vertical: 2.0),
               ),
               Text('削除'),
+            ],
+          ),
+        ),
+        TextButton(
+          style: flatButtonStyle,
+          onPressed: () {
+
+            Share.share(_getResultString());
+
+            },
+          child: Column(
+            children: const <Widget>[
+              Icon(Icons.share),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 2.0),
+              ),
+              Text('共有'),
             ],
           ),
         ),
@@ -327,13 +356,13 @@ class DateTimeLeading extends StatelessWidget{
 
 
 
-class GyoshaDataScoreTable extends StatelessWidget{
+class GyoshaDataScoreTable extends ConsumerWidget{
   final GyoshaDataObj gyoshaDataObj;
   final int row = 10;
   const GyoshaDataScoreTable(this.gyoshaDataObj, {Key? key}) : super(key: key);
 
   List<Table> _getTables(GyoshaType gyoshaType,ShakaiResultDataObj shakaiData, double resultSpaceWidth, double rateSpaceWidth,
-      double rankSpaceSize, double nameSpaceSize, double resultSpaceSize, double rateSpaceSize,){
+      double rankSpaceSize, double nameSpaceSize, double resultSpaceSize, double rateSpaceSize, WidgetRef ref){
     return gyoshaDataObj.sankashaList.map((sankashaData) {
       SankashaResultDataObj sankashaResultData = shakaiData.sankashaResultMap[sankashaData.sankashaID]!;
 
@@ -375,7 +404,7 @@ class GyoshaDataScoreTable extends StatelessWidget{
                   Container(
                    alignment: Alignment.centerLeft,
                    child: FittedBox(
-                   child: Text(sankashaData.sankashaName==""? "名無し":sankashaData.sankashaName ,overflow: TextOverflow.ellipsis),
+                   child: Text(sankashaData.isAppUser==true? ref.watch(userDatasProvider).userName:sankashaData.sankashaName ,overflow: TextOverflow.ellipsis),
                   )
                   ),
                   Container(
@@ -406,14 +435,14 @@ class GyoshaDataScoreTable extends StatelessWidget{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context,WidgetRef ref){
     ShakaiResultDataObj shakaiData = gyoshaDataObj.shakaiResultDataObj;
     return LayoutBuilder(builder: (context, constraint){
         double rankSpaceSize = constraint.maxWidth*0.08;
         double nameSpaceSize = constraint.maxWidth*0.15;
         double resultSpaceSize = constraint.maxWidth*0.6;
         double rateSpaceSize = constraint.maxWidth*0.17;
-        List<Table> tableData = _getTables(gyoshaDataObj.gyoshaData.gyoshaType,shakaiData,resultSpaceSize,rateSpaceSize,rankSpaceSize, nameSpaceSize, resultSpaceSize, rateSpaceSize);
+        List<Table> tableData = _getTables(gyoshaDataObj.gyoshaData.gyoshaType,shakaiData,resultSpaceSize,rateSpaceSize,rankSpaceSize, nameSpaceSize, resultSpaceSize, rateSpaceSize,ref);
         List<Widget> viewData = [];
         for(Widget item in tableData){
           viewData.add(item);

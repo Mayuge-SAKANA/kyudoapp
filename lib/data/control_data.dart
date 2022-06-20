@@ -32,24 +32,34 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
   );
 
 
-  void createAndAddGyoshaData(GyoshaDataObj gyoshaDataObj, WidgetRef ref)async{
-
+  void createAndAddGyoshaData( WidgetRef ref)async{
 
     RecordDB recordDB = ref.watch(recordDBProvider);
 
-    var dbId = await recordDB!.insertData('gyosha_data', gyoshaDataObj.gyoshaData);
+    DateTime startTime = DateTime.now();
+    String initialGyoshaName = "今日の行射";
+    var gyoshaDataObj = GyoshaDataObj("ユーザ名",initialGyoshaName,GyoshaType.renshu,startTime,startTime,
+        recordDB: ref.read(recordDBProvider));
+    await gyoshaDataObj.addSankasha("ユーザ名",isAppUser: true, recordDB: recordDB);
+
+
+    var dbId = await recordDB.insertData('gyosha_data', gyoshaDataObj.gyoshaData);
 
     String newGyoshaID = generateID('G', dbId);
-    print("newGyoshaID$newGyoshaID");
     gyoshaDataObj.gyoshaData.gyoshaID = newGyoshaID;
+
+
     gyoshaDataObj.sankashaList[0].gyoshaID = newGyoshaID;
-    gyoshaDataObj.addTachi(recordDB: recordDB);
+    await gyoshaDataObj.addTachi(recordDB: recordDB);
 
     List<GyoshaDataObj> newList = [...state.gyoshaDataList,gyoshaDataObj];
     state = state.copyWith(
         gyoshaDataList: newList);
 
-    await recordDB!.updateData('gyosha_data', 'id', dbId, gyoshaDataObj.gyoshaData);
+    recordDB.updateData('gyosha_data', 'id', dbId, gyoshaDataObj.gyoshaData);
+    recordDB.updateData('sankasha_data', 'sankashaID', gyoshaDataObj.sankashaList[0].sankashaID, gyoshaDataObj.sankashaList[0]);
+
+
 
   }
 

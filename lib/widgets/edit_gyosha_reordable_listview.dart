@@ -26,15 +26,17 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
 
       itemBuilder: (_, index) => ReorderableDelayedDragStartListener(
           index: index,
-          key: ValueKey(editingTachiList[index].tachiID),
-          child: Card(
+          key: ValueKey(index ==editingTachiList.length?"":editingTachiList[index].tachiID),
+          child: index ==editingTachiList.length?
+          SizedBox(height: MediaQuery.of(context).size.height*0.3)
+          :Card(
             child:
             Row(
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width*0.15,
                   height: dataHeight,
-                  child: NameSpace(editingTachiList[index].sankashaData.sankashaName),
+                  child: NameSpace(editingTachiList[index].sankashaData.isAppUser?ref.watch(userDatasProvider).userName:editingTachiList[index].sankashaData.sankashaName),
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width*0.7,
@@ -45,8 +47,8 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
                   width: MediaQuery.of(context).size.width*0.1,
                   height: dataHeight,
                   child: IconButton(
-                    onPressed: () {
-                      editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID,recordDB:ref.read(recordDBProvider));
+                    onPressed: () async{
+                      await editingGyoshaData.removeTachiAt(editingTachiList[index].tachiID,recordDB:ref.read(recordDBProvider));
                       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                     },
                     icon: const Icon(Icons.delete),
@@ -56,7 +58,7 @@ class _GyoshaSliverReorderableListView extends ConsumerState<GyoshaSliverReorder
             ),
           )
       ),
-      itemCount: editingTachiList.length,
+      itemCount: editingTachiList.length+1,
       onReorder: (int oldIndex, int newIndex) {
         _onReorder(editingTachiList, oldIndex, newIndex);
         editingGyoshaData.setTachiIndex();
@@ -171,7 +173,7 @@ class AddPopUpMenuButton extends ConsumerWidget{
       icon: const Icon(Icons.add),
       offset: const Offset(0,0),
       initialValue: false,
-      onSelected: (shaResult){
+      onSelected: (shaResult)async{
         ShaResultType result = shaResult as ShaResultType;
 
         if(result==ShaResultType.delete){
@@ -182,7 +184,7 @@ class AddPopUpMenuButton extends ConsumerWidget{
           _setData();
         }
         if(index==editingTachiList.length-1){
-          editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
+          await editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
 
           DateTime now = DateTime.now();
           if(now.isAfter(editingGyoshaData.gyoshaData.finishDateTime)){

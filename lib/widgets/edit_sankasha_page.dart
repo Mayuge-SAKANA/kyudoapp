@@ -48,7 +48,8 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
           return AlertDialog(
             title: const Text('参加者名を入力'),
             content: TextFormField(
-              decoration: const InputDecoration(hintText: '参加者名を入力'),
+              maxLength: 5,
+              decoration: const InputDecoration(hintText: '参加者名を入力(5文字まで)'),
               controller: TextEditingController.fromValue(
                 TextEditingValue(
                   text: initName,

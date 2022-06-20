@@ -43,10 +43,14 @@ dependencies:
   get: ^4.6.5
   sqflite: ^2.0.2+1
   sqflite_common_ffi: ^2.1.1
+  share: ^2.0.4
+  flutter_launcher_icons: ^0.9.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: any # この行を追加
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -57,7 +61,13 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_icons:
+    android: true
+    ios: true
+    image_path_ios: "assets/icons/icon_1024.png"
+    image_path_android: "assets/icons/icon_0512.png"
+    adaptive_icon_foreground: "assets/icons/icon_432.png"
+    adaptive_icon_background: "assets/icons/icon_432.png"
 # The following section is specific to Flutter.
 flutter:
 
@@ -65,6 +75,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+
+
 
   # To add assets to your application, add an assets section, like this:
   assets:

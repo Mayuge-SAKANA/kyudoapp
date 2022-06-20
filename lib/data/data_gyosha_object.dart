@@ -29,13 +29,12 @@ class GyoshaDataObj {
 
   GyoshaDataObj(mainEditorName, gyoshaName, gyoshaType, startDateTime,finishDateTime,
   {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true,RecordDB? recordDB}):
-      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('G',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState)
+      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('TEST',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState)
   {
 
-
-    if(newFlag){
-      addSankasha(mainEditorName,isAppUser:true,recordDB: recordDB);
-    }
+   // if(newFlag){
+   //   addSankasha(mainEditorName,isAppUser:true,recordDB: recordDB);
+    // }
 
     if(startCountNumber>-1) _gyoshaInstanceNumber = startCountNumber;
     _gyoshaInstanceNumber++;
@@ -48,10 +47,10 @@ class GyoshaDataObj {
     sankashaList.add(newSankasha);
 
     if(recordDB!=null){
-      var dbId = await recordDB!.insertData('sankasha_data', newSankasha);
-      String newSankashaID = generateID('TEST', dbId);
+      var dbId = await recordDB.insertData('sankasha_data', newSankasha);
+      String newSankashaID = generateID('U', dbId);
       newSankasha.sankashaID = newSankashaID;
-      recordDB!.updateData('sankasha_data', 'id', dbId, newSankasha);
+      await recordDB.updateData('sankasha_data', 'id', dbId, newSankasha);
       sankashaList.last.sankashaID = newSankashaID;
     }
     return newSankasha;
@@ -65,8 +64,8 @@ class GyoshaDataObj {
     sankashaList = [...sankashaList.where((item){return item.sankashaID!=sankashaID;})];
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     if(recordDB!=null){
-      recordDB!.deleteData('sankasha_data', 'sankashaID', sankashaID);
-      recordDB!.deleteData('tachi_data', 'sankashaID', sankashaID);
+      recordDB.deleteData('sankasha_data', 'sankashaID', sankashaID);
+      recordDB.deleteData('tachi_data', 'sankashaID', sankashaID);
     }
 
     setTachiIndex(recordDB:recordDB);
@@ -93,8 +92,8 @@ class GyoshaDataObj {
     sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
     isAppUserIsSankasha = false;
     if(recordDB!=null){
-      recordDB!.deleteData('sankasha_data', 'sankashaID', appUserID);
-      recordDB!.deleteData('tachi_data', 'sankashaID', appUserID);
+      recordDB.deleteData('sankasha_data', 'sankashaID', appUserID);
+      recordDB.deleteData('tachi_data', 'sankashaID', appUserID);
     }
 
     setTachiIndex(recordDB: recordDB);
@@ -112,18 +111,18 @@ class GyoshaDataObj {
       SankashaData sankashaData = sankashaList[index];
       sankashaData.sankashaNumber = index;
       if(recordDB!=null){
-        recordDB!.updateData('sankasha_data', 'sankashaID', sankashaData.sankashaID, sankashaData);
+        recordDB.updateData('sankasha_data', 'sankashaID', sankashaData.sankashaID, sankashaData);
       }
       return sankashaData;
     });
   }
 
-  void setTachiIndex({RecordDB? recordDB}){
+  Future<void> setTachiIndex({RecordDB? recordDB})async{
     tachiList = List.generate(tachiList.length, (index){
       TachiDataObj tachiDataObj = tachiList[index];
       tachiDataObj.tachiData.tachiNumber = index;
       if(recordDB!=null){
-        recordDB!.updateData('tachi_data', 'tachiID', tachiDataObj.tachiID, tachiDataObj.tachiData);
+        recordDB.updateData('tachi_data', 'tachiID', tachiDataObj.tachiID, tachiDataObj.tachiData);
       }
       return tachiDataObj;
     }).toList();
@@ -131,38 +130,49 @@ class GyoshaDataObj {
 
   //編集画面でaddした時のロジックをこっちに持ってくる必要がある
 
-  void addTachi({bool addAll = true,RecordDB? recordDB})async{
+  Future<void> addTachi({bool addAll = true,RecordDB? recordDB})async{
+
+
     if(addAll==true){
+      bool deleteStopFlag = false;
+      for(int i = tachiList.length-1; i>-1; i--){
+        if(deleteStopFlag==true)break;
+        if(tachiList[i].shaList.isEmpty){
+          await removeTachiAt(tachiList[i].tachiID,recordDB:recordDB);
+        }else{
+          deleteStopFlag=true;
+        }
+      }
+
+      print("add ${sankashaList.length} data");
       for(SankashaData sankashaData in sankashaList){
 
         _tachiInstanceNumber++;
 
         String tachiID = generateID('TEST', _tachiInstanceNumber);
-        print("bef"+tachiID);
         var tachiDataObj = TachiDataObj(tachiID, gyoshaID,sankashaData, tachiNumber: tachiList.length-1);
         tachiList.add(tachiDataObj);
-        print(recordDB);
 
         if(recordDB!=null){
 
-          var dbId = await recordDB!.insertData('tachi_data', tachiDataObj.tachiData);
+          var dbId = await recordDB.insertData('tachi_data', tachiDataObj.tachiData);
           String newTachiID = generateID('T', dbId);
           tachiDataObj.tachiData.tachiID = newTachiID;
-          tachiList.last.tachiData.tachiID = newTachiID;
-          await recordDB!.updateData('tachi_data', 'id', dbId, tachiDataObj.tachiData);
+          //tachiList.last.tachiData.tachiID = newTachiID;
+          await recordDB.updateData('tachi_data', 'id', dbId, tachiDataObj.tachiData);
 
-          print("new"+newTachiID);
         }
 
       }
     }
   }
-  void removeTachiAt(String tachiID,{RecordDB? recordDB}){
+  Future<void> removeTachiAt(String tachiID,{RecordDB? recordDB})async{
     tachiList = tachiList.where((item)=>item.tachiID!=tachiID).toList();
     if(recordDB!=null){
-      recordDB!.deleteData('tachi_data', 'tachiID', tachiID);
+      print("delete tachi item...");
+      await recordDB.deleteData('tachi_data', 'tachiID', tachiID);
     }
-    setTachiIndex();
+    await setTachiIndex();
   }
 
   int countUserAtariTotal(String sankashaID){

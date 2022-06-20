@@ -92,11 +92,10 @@ class LocalRecordDB extends RecordDB{
 
   @override
   Future<int> insertData(String tableName ,DataAbstClass data,{dynamic db}) async {
-    print("now");
+
     db = db??await gyoshaDatabase;
     db = db as Database;
-    print(tableName);
-    print(data.toMap());
+
     int id = await db.insert(
       tableName,
       data.toMap(),
@@ -108,9 +107,7 @@ class LocalRecordDB extends RecordDB{
 
   @override
   Future<void> updateData(String tableName ,String idName ,dynamic id, DataAbstClass data,{dynamic db}) async{
-    print("update");
-    print(idName);
-    print(id);
+
     db = db??await gyoshaDatabase;
     db = db as Database;
     var ret = await db.update(
@@ -121,7 +118,7 @@ class LocalRecordDB extends RecordDB{
       conflictAlgorithm: ConflictAlgorithm.fail,
     );
 
-    print(ret);
+
   }
 
   @override
@@ -139,7 +136,7 @@ class LocalRecordDB extends RecordDB{
 
   @override
   Future<void> deleteData(String tableName ,String idName ,String id, {dynamic db}) async {
-    print("delete");
+
     db = db??await gyoshaDatabase;
     db = db as Database;
     var ret = await db.delete(
@@ -147,8 +144,7 @@ class LocalRecordDB extends RecordDB{
       where: "$idName = ?",
       whereArgs: [id],
     );
-    print(idName+id);
-    print(ret);
+
   }
 
   @override
@@ -246,7 +242,7 @@ class LocalRecordDB extends RecordDB{
       await queryDataMaps("tachi_data",'gyoshaID', map['gyoshaID'],db: db);
 
       for (var tachiMap in tachiMaps) {
-        print(tachiMap);
+
         String sankashaID = tachiMap['sankashaID'];
         SankashaData sankashaData = gyoshaDataObj.sankashaList.firstWhere(
                 (element) => element.sankashaID == sankashaID

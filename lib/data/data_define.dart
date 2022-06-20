@@ -43,6 +43,15 @@ enum ShaResultType{
   delete,
 }
 
+Map<ShaResultType, String> shaResultString = {
+  ShaResultType.atari: "○",
+  ShaResultType.hazure: "✕",
+  ShaResultType.shitsu: "失",
+  ShaResultType.fumei: "？",
+  ShaResultType.nashi: "－",
+  ShaResultType.delete: "",
+};
+
 class ShakaiResultDataObj{
   final GyoshaDataObj gyoshaDataObj;
   Map<String,SankashaResultDataObj> sankashaResultMap= {};
@@ -78,6 +87,29 @@ class ShakaiResultDataObj{
       rankingMap[orderedScoreList[i].key] = rankCounter;
     }
   }
+
+  String generateResultString(String appUserName){
+    String result = "";
+    result += gyoshaDataObj.gyoshaData.gyoshaName+"\n";
+    result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!+"\n";
+
+    for(var sankashaData in gyoshaDataObj.sankashaList){
+      var sankashaID = sankashaData.sankashaID;
+      result += sankashaData.isAppUser==true? appUserName.padRight(5,"　"):sankashaData.sankashaName.padRight(5,"　");
+      if(sankashaResultMap.containsKey(sankashaID)==false){
+        continue;
+      }
+      SankashaResultDataObj data = sankashaResultMap[sankashaID]!;
+      for(var item in data.resultList){
+        result += shaResultString[item]!;
+      }
+      result+="\n";
+    }
+
+
+    return result;
+  }
+
 }
 
 class SankashaResultDataObj{

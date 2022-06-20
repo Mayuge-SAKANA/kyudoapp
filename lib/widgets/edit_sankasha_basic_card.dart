@@ -24,7 +24,8 @@ class SankashaCardContents extends  ConsumerWidget {
           return AlertDialog(
             title: const Text('参加者名を入力'),
             content: TextFormField(
-              decoration: const InputDecoration(hintText: '参加者名を入力'),
+              maxLength: 5,
+              decoration: const InputDecoration(hintText: '参加者名(5文字まで)'),
               controller: TextEditingController.fromValue(
                 TextEditingValue(
                   text: initName,
@@ -78,7 +79,7 @@ class SankashaCardContents extends  ConsumerWidget {
             ),
             SizedBox(
               width: constrain.maxWidth*0.5,
-              child: Text(sankashaList[index].sankashaName,overflow: TextOverflow.ellipsis),
+              child: Text(sankashaList[index].isAppUser==false?sankashaList[index].sankashaName:ref.watch(userDatasProvider).userName,overflow: TextOverflow.ellipsis),
             ),
             SizedBox(
               width: constrain.maxWidth*0.2,

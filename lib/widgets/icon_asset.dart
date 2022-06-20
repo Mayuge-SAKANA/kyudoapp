@@ -19,14 +19,7 @@ Map<ShaResultType, IconData> shaResultIcon = {
   ShaResultType.delete: Icons.delete,
 };
 
-Map<ShaResultType, String> shaResultString = {
-  ShaResultType.atari: "○",
-  ShaResultType.hazure: "×",
-  ShaResultType.shitsu: "失",
-  ShaResultType.fumei: "？",
-  ShaResultType.nashi: "－",
-  ShaResultType.delete: "",
-};
+
 
 Map<GyoshaType, String> gyoshaTypeString = {
   GyoshaType.renshu:"練習",

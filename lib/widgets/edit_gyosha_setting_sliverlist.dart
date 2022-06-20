@@ -266,7 +266,9 @@ class SankashaEditRow extends ConsumerWidget{
           ),
           SizedBox(
             width: constrain.maxWidth*0.5,
-            child: Text(editingGyoshaData.sankashaList.map<String>((SankashaData value) => value.sankashaName==""? "名無し": value.sankashaName).join(', '),
+            child: Text(editingGyoshaData.sankashaList.map<String>((SankashaData value) {
+              return value.isAppUser==true? ref.watch(userDatasProvider).userName: value.sankashaName;
+            }).join(', '),
                 overflow: TextOverflow.ellipsis),
           ),
           SizedBox(
