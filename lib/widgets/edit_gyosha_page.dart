@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
 
-import '../data/data_tachi_object.dart';
 import '../data/data_gyosha_object.dart';
 import 'edit_gyosha_setting_sliverlist.dart';
 import 'edit_gyosha_reordable_listview.dart';
@@ -15,7 +14,6 @@ class GyoshaEditPage extends ConsumerWidget{
   @override
   Widget build(BuildContext context,WidgetRef ref) {
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
-    List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
     var _scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(

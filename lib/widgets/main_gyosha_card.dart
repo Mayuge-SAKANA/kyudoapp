@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:configurable_expansion_tile_null_safety/configurable_expansion_tile_null_safety.dart';
-import 'package:kyodoapp/data/control_appuserdata.dart';
+
 
 import '../data/control_data.dart';
 import '../data/data_define.dart';

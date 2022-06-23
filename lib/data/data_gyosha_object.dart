@@ -8,6 +8,7 @@ class GyoshaDataObj {
   static int _gyoshaInstanceNumber = 0;
   int _sankashaInstanceNumber = 0;
   int _tachiInstanceNumber = 0;
+  bool isLocked = false;
 
   final GyoshaData gyoshaData;
   List<TachiDataObj> tachiList = []; //立集合
@@ -144,7 +145,6 @@ class GyoshaDataObj {
         }
       }
 
-      print("add ${sankashaList.length} data");
       for(SankashaData sankashaData in sankashaList){
 
         _tachiInstanceNumber++;
@@ -169,7 +169,6 @@ class GyoshaDataObj {
   Future<void> removeTachiAt(String tachiID,{RecordDB? recordDB})async{
     tachiList = tachiList.where((item)=>item.tachiID!=tachiID).toList();
     if(recordDB!=null){
-      print("delete tachi item...");
       await recordDB.deleteData('tachi_data', 'tachiID', tachiID);
     }
     await setTachiIndex();

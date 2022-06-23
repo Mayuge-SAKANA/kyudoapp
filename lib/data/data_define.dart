@@ -91,7 +91,7 @@ class ShakaiResultDataObj{
   String generateResultString(String appUserName){
     String result = "";
     result += gyoshaDataObj.gyoshaData.gyoshaName+"\n";
-    result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!+"\n";
+
 
     for(var sankashaData in gyoshaDataObj.sankashaList){
       var sankashaID = sankashaData.sankashaID;
@@ -100,11 +100,20 @@ class ShakaiResultDataObj{
         continue;
       }
       SankashaResultDataObj data = sankashaResultMap[sankashaID]!;
+      result+= data.totalSha>0?(data.atariSha).toString()+"本/"+(data.totalSha).toString()+"本":"-本/-本";
+      result+= "(";
+      result+= data.totalSha>0?(100*data.atariSha/data.totalSha).toStringAsFixed(1):"-";
+      result+= "%)\n";
       for(var item in data.resultList){
         result += shaResultString[item]!;
       }
       result+="\n";
     }
+    if(gyoshaDataObj.gyoshaData.memoText!=null){
+      result += "*--*\n";
+      result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!+"\n";
+    }
+
 
 
     return result;

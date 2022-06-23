@@ -19,6 +19,8 @@ class GyoshaSettingSliverList extends ConsumerStatefulWidget{
 
 class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
   final _toggleList = <bool>[false, false, false];
+
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,14 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
   @override
   Widget build(BuildContext context) {
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
+    Color lockColor;
+    if(editingGyoshaData.isLocked){
+      lockColor = Theme.of(context).colorScheme.primary;
+    }else{
+      lockColor = Color.fromRGBO(100, 100, 100, 1);
+    }
+
+
 
     return SliverList(
       delegate: SliverChildListDelegate(
@@ -45,7 +55,21 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
                     width: MediaQuery.of(context).size.width*0.3,
                     child: const FinishTimeTextColumn(),),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width*0.3,
+                    width: MediaQuery.of(context).size.width*0.1,
+                    child: IconButton(
+                      icon: Icon(Icons.lock,color: lockColor),
+                      onPressed: () {
+
+                        editingGyoshaData.isLocked = !editingGyoshaData.isLocked;
+                        ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData, ref);
+
+
+                        //処理
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.2,
                       child: Center(
                         child: FittedBox(child:
                           Text('${editingGyoshaData.renshuHour}時間${editingGyoshaData.renshuMinutes}分')

@@ -173,25 +173,27 @@ class AddPopUpMenuButton extends ConsumerWidget{
       icon: const Icon(Icons.add),
       offset: const Offset(0,0),
       initialValue: false,
-      onSelected: (shaResult)async{
+      onSelected: (shaResult) async {
         ShaResultType result = shaResult as ShaResultType;
 
         if(result==ShaResultType.delete){
           editingTachi.shaList.removeAt(editingTachi.shaList.length-1);
-          _setData();
+          //_setData();
         }else {
           editingTachi.addSha(result, db: db);
-          _setData();
+          //_setData();
         }
         if(index==editingTachiList.length-1){
           await editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
-
-          DateTime now = DateTime.now();
+        }
+        DateTime now = DateTime.now();
+        if(!editingGyoshaData.isLocked){
           if(now.isAfter(editingGyoshaData.gyoshaData.finishDateTime)){
             editingGyoshaData.gyoshaData.finishDateTime = now;
           }
-          _setData();
         }
+        _setData();
+
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         for(int i=0; i<shaResultMap.length; i++)PopupMenuItem(

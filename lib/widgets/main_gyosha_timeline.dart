@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../data/control_data.dart';
-import '../data/data_define.dart';
 import '../data/data_gyosha_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main_gyosha_card.dart';
+import 'editing_profile.dart';
 
 class MainView extends ConsumerWidget {
   const MainView({Key? key}) : super(key: key);
@@ -78,12 +78,16 @@ class DrawerMenu extends StatelessWidget {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(),
-            child: Text("Drawer Header"),
+            child: Text("弓道アプリ"),
           ),
           ListTile(
             title: const Text("プロフィール"),
             onTap: (){
-              Navigator.pop(context);
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context){
+                    return  ProfileSetting();
+                  })
+              );
             },
           ),
           ListTile(
@@ -92,12 +96,15 @@ class DrawerMenu extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          /*
           ListTile(
             title: const Text("カレンダー"),
             onTap: (){
               Navigator.pop(context);
             },
           ),
+          * */
+
         ],
       ),
     );
