@@ -30,7 +30,7 @@ class GyoshaDataObj {
 
   GyoshaDataObj(mainEditorName, gyoshaName, gyoshaType, startDateTime,finishDateTime,
   {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true,RecordDB? recordDB}):
-      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('TEST',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState)
+      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('TEST',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState,memoText: memoText)
   {
 
    // if(newFlag){

@@ -108,6 +108,7 @@ class LocalRecordDB extends RecordDB{
   @override
   Future<void> updateData(String tableName ,String idName ,dynamic id, DataAbstClass data,{dynamic db}) async{
 
+
     db = db??await gyoshaDatabase;
     db = db as Database;
     var ret = await db.update(
@@ -190,6 +191,7 @@ class LocalRecordDB extends RecordDB{
         gyoshaID:map['gyoshaID'],
         newFlag: false,
     );
+
     return gyoshaDataObj;
 
   }

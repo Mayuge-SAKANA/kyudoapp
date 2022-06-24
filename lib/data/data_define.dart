@@ -91,6 +91,7 @@ class ShakaiResultDataObj{
   String generateResultString(String appUserName){
     String result = "";
     result += gyoshaDataObj.gyoshaData.gyoshaName+"\n";
+    result += "*--*\n";
 
 
     for(var sankashaData in gyoshaDataObj.sankashaList){
