@@ -41,11 +41,13 @@ class TachiDataObj {
     return shaList.where((element) => element.shaResult==ShaResultType.atari).length;
   }
 
-  void removeShaAt(String shaID,{RecordDB? db}){
+  Future<void> removeShaAt(String shaID,{RecordDB? db})async{
+    print("deleteinObj"+shaID);
+
     if(db!=null){
-      db.deleteData('sha_table', 'shaID', shaID);
+      var ret = await db.deleteData('sha_data', 'shaID', shaID);
     }
-    return shaList.removeWhere((element) => element.shaID==shaID);
+    shaList.removeWhere((element) => element.shaID==shaID);
   }
 
   }

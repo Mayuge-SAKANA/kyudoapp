@@ -53,6 +53,7 @@ class GyoshaDataObj {
       newSankasha.sankashaID = newSankashaID;
       await recordDB.updateData('sankasha_data', 'id', dbId, newSankasha);
       sankashaList.last.sankashaID = newSankashaID;
+
     }
     return newSankasha;
   }
@@ -87,27 +88,30 @@ class GyoshaDataObj {
       return null;
     }
   }
-  void deleteAppUserData({RecordDB? recordDB}){
+  void deleteAppUserData({RecordDB? recordDB})async{
 
     tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
     sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
+
     isAppUserIsSankasha = false;
     if(recordDB!=null){
-      recordDB.deleteData('sankasha_data', 'sankashaID', appUserID);
-      recordDB.deleteData('tachi_data', 'sankashaID', appUserID);
+      await recordDB.deleteData('sankasha_data', 'sankashaID', appUserID);
+      await recordDB.deleteData('tachi_data', 'sankashaID', appUserID);
+
     }
 
     setTachiIndex(recordDB: recordDB);
     setSankashaIndex(recordDB: recordDB);
   }
-  void addAppUserToSankasha({RecordDB? recordDB}){
+  void addAppUserToSankasha({RecordDB? recordDB})async{
     if(isAppUserIsSankasha==false) {
-      addSankasha("ユーザ",isAppUser: true);
+      await addSankasha("ユーザ",isAppUser: true);
     }
+
     isAppUserIsSankasha = true;
     setSankashaIndex(recordDB: recordDB);
   }
-  void setSankashaIndex({RecordDB? recordDB}){
+  Future<void> setSankashaIndex({RecordDB? recordDB})async{
     sankashaList = List.generate(sankashaList.length, (index) {
       SankashaData sankashaData = sankashaList[index];
       sankashaData.sankashaNumber = index;

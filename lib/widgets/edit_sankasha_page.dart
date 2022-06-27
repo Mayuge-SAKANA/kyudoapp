@@ -101,26 +101,32 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
         children: [
           const AppUserSankashaCard(),
           Expanded(
-            child:  ReorderableListView(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              children: <Widget>[
-                for (int index = 0; index < sankashaList.length; index += 1)
-                  Card(
+            child:
+            sankashaList.length==0?
+            Text("参加者を入力してください")
+            :ReorderableListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                itemBuilder: (context, index) {
+                  return Card(
                     key: ValueKey(sankashaList[index].sankashaID),
                     child: SankashaCardContents(index),
-                  ),
-              ],
-              onReorder: (int oldIndex, int newIndex) {
-                setState(() {
-                  if (oldIndex < newIndex) {
-                    newIndex -= 1;
-                  }
-                  sankashaList.insert(newIndex,sankashaList.removeAt(oldIndex));
-                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
-                });
-              },
+                  );
+                },
+                itemCount: sankashaList.length,
+                onReorder: (int oldIndex, int newIndex) {
+                  setState(() {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
+                    sankashaList.insert(newIndex,sankashaList.removeAt(oldIndex));
+                    editingGyoshaData.setSankashaIndex();
+
+                    ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
+                  });
+                },
             ),
           ),
+
 
         ],
       ),

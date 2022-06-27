@@ -224,15 +224,22 @@ class StartTimeTextColumn extends ConsumerWidget{
             DatePicker.showDateTimePicker(context,
                 showTitleActions: true,
                 minTime: DateTime(2022, 5, 1,12),
-                maxTime: DateTime(2100, 5, 1,12), onChanged: (date) {
-                }, onConfirm: (date) {
+                maxTime: DateTime(2100, 5, 1,12),
+                onChanged: (date) {
                   gyoshaData.startDateTime = date;
                   if(gyoshaData.finishDateTime.isBefore(gyoshaData.startDateTime)){
                     gyoshaData.finishDateTime = gyoshaData.startDateTime;
                   }
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
-
-                }, currentTime: gyoshaData.startDateTime, locale: LocaleType.jp);
+                },
+                onConfirm: (date) {
+                  gyoshaData.startDateTime = date;
+                  if(gyoshaData.finishDateTime.isBefore(gyoshaData.startDateTime)){
+                    gyoshaData.finishDateTime = gyoshaData.startDateTime;
+                  }
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
+                },
+                currentTime: gyoshaData.startDateTime, locale: LocaleType.jp);
           },
           child: Column(
             children: [
@@ -256,11 +263,16 @@ class FinishTimeTextColumn extends ConsumerWidget{
             DatePicker.showDateTimePicker(context,
                 showTitleActions: true,
                 minTime: gyoshaData.startDateTime,
-                maxTime: DateTime(2100, 5, 1), onChanged: (date) {
-                }, onConfirm: (date) {
+                maxTime: DateTime(2100, 5, 1),
+                onChanged: (date) {
                   gyoshaData.finishDateTime = date;
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
-                }, currentTime: gyoshaData.finishDateTime, locale: LocaleType.jp);
+                },
+                onConfirm: (date) {
+                  gyoshaData.finishDateTime = date;
+                  ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
+                },
+                currentTime: gyoshaData.finishDateTime, locale: LocaleType.jp);
           },
           child: Column(
             children: [

@@ -14,6 +14,7 @@ class ProfileSetting extends ConsumerWidget{
         child: Column(
           children: [
             Text("あなたの名前を入力してください"),
+            Text("現在の設定："+ref.watch(userDatasProvider).userName),
             TextFormField(
               maxLength: 5,
               decoration: const InputDecoration(hintText: '名前を入力(5文字まで)'),

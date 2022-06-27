@@ -52,18 +52,14 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
                 onPressed: (index) {
                   setState(() {
                     for(int i=0;i<_toggleList.length;i++){
-                      if(i==index){
-                        _toggleList[i] = true;
-                      }else{
-                        _toggleList[i] = false;
-                      }
-                      if(_toggleList[0]==true){
-                        editingGyoshaData.addAppUserToSankasha(recordDB:ref.read(recordDBProvider));
-                      }else{
-                        editingGyoshaData.deleteAppUserData(recordDB:ref.read(recordDBProvider));
-                      }
-                      ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
+                        _toggleList[i] = !_toggleList[i];
                     }
+                    if(_toggleList[0]==true){
+                      editingGyoshaData.addAppUserToSankasha(recordDB:ref.read(recordDBProvider));
+                    }else{
+                      editingGyoshaData.deleteAppUserData(recordDB:ref.read(recordDBProvider));
+                    }
+                    ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                   });
                 },
               ),

@@ -100,20 +100,37 @@ class ScoreEditSpace extends ConsumerWidget {
       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
 
+
+
     return LayoutBuilder(builder: (context, constrain){
+
+      var items = [];
+      for(int i=0;i<editingTachi.shaList.length;i++){
+        var shaData = editingTachi.shaList[i];
+        void _deleteItem(){
+          editingTachi.removeShaAt(shaData.shaID,db: ref.read(recordDBProvider));
+          _setData();
+        }
+        var element = SizedBox(
+          width: constrain.maxWidth/5,
+          height: constrain.maxWidth/5,
+          child: SelectPopUpMenuButton(shaData,_deleteItem,_setData),
+        );
+
+        if((i+1)%4==1&&i>2){
+          items.add(
+              SizedBox(
+                width: constrain.maxWidth/5,
+                height: constrain.maxWidth/5,
+              )
+          );
+        }
+        items.add(element);
+      }
+
       return Wrap(
         children: <Widget>[
-          ...editingTachi.shaList.map((shaData) {
-            void _deleteItem(){
-              editingTachi.removeShaAt(shaData.shaID);
-              _setData();
-            }
-            return SizedBox(
-              width: constrain.maxWidth/5,
-              height: constrain.maxWidth/5,
-              child: SelectPopUpMenuButton(shaData,_deleteItem,_setData),
-            );
-          }).toList(),
+          ...items,
 
           SizedBox(
             width: constrain.maxWidth/5,
@@ -134,6 +151,7 @@ class SelectPopUpMenuButton extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return PopupMenuButton(
+      color: Theme.of(context).colorScheme.primaryContainer,
       icon: Icon(shaResultMap[shaData.shaResult]!.icon),
       offset: const Offset(0,0),
       initialValue: false,
@@ -170,7 +188,8 @@ class AddPopUpMenuButton extends ConsumerWidget{
       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
     return PopupMenuButton(
-      icon: const Icon(Icons.add),
+      color: Theme.of(context).colorScheme.primaryContainer,
+      icon: Icon(Icons.add,color: Theme.of(context).colorScheme.primary),
       offset: const Offset(0,0),
       initialValue: false,
       onSelected: (shaResult) async {

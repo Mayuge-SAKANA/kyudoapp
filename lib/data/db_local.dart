@@ -16,6 +16,10 @@ class LocalRecordDB extends RecordDB{
     //deleteDatabase(dbPath);
   }
 
+  Future<void> deleteAll() async{
+    await deleteDatabase(dbPath);
+  }
+
   Future<Database> get gyoshaDatabase async {
     // openDatabase() データベースに接続
     final Future<Database> _database = openDatabase(
@@ -124,14 +128,15 @@ class LocalRecordDB extends RecordDB{
 
   @override
   Future<List<Map<String, dynamic>>> queryDataMaps(
-      String tableName ,String idName ,String id, {dynamic db}
+      String tableName ,String idName ,String id, {dynamic db,String? orderBy}
       ) async{
     db = db??await gyoshaDatabase;
     db = db as Database;
     return await db.query(
         tableName,
         where: "$idName=?",
-        whereArgs: [id]
+        whereArgs: [id],
+        orderBy: orderBy,
     );
   }
 
@@ -226,14 +231,22 @@ class LocalRecordDB extends RecordDB{
   @override
   Future<List<GyoshaDataObj>> getGyoshaDataObjList() async {
     final db = await gyoshaDatabase;
-    final List<Map<String, dynamic>> maps = await db.query('gyosha_data');
+    final List<Map<String, dynamic>> maps = await db.query(
+        'gyosha_data',
+        orderBy: 'startYear ASC, startMonth ASC, startDay ASC, startHour ASC, startMinute ASC',
+    );
     final List<GyoshaDataObj> newList = [];
 
-    for(var map in maps){
-    var gyoshaDataObj = getGyoshaDataObjFromMap(map);
-    newList.add(gyoshaDataObj);
+    for(var map in maps) {
+      var gyoshaDataObj = getGyoshaDataObjFromMap(map);
+      gyoshaDataObj.sankashaList.clear();
+
+      newList.add(gyoshaDataObj);
       final List<Map<String, dynamic>> sankashaMaps =
-      await queryDataMaps('sankasha_data', 'gyoshaID', map['gyoshaID'],db: db);
+      await queryDataMaps('sankasha_data', 'gyoshaID', map['gyoshaID'],
+          db: db,
+          orderBy: 'sankashaNumber ASC',
+      );
 
       for (var sankashaMap in sankashaMaps) {
         SankashaData sankashaData = getSankashaDataFromMap(sankashaMap);
@@ -241,24 +254,30 @@ class LocalRecordDB extends RecordDB{
       }
 
       final List<Map<String, dynamic>> tachiMaps =
-      await queryDataMaps("tachi_data",'gyoshaID', map['gyoshaID'],db: db);
+      await queryDataMaps("tachi_data", 'gyoshaID', map['gyoshaID'],
+          db: db,
+          orderBy: 'tachiNumber ASC'
+      );
 
-      for (var tachiMap in tachiMaps) {
+      if (tachiMaps.isNotEmpty) {
+        for (var tachiMap in tachiMaps) {
+          String sankashaID = tachiMap['sankashaID'];
+          SankashaData sankashaData = gyoshaDataObj.sankashaList.firstWhere(
+                  (element) => element.sankashaID == sankashaID
+          );
 
-        String sankashaID = tachiMap['sankashaID'];
-        SankashaData sankashaData = gyoshaDataObj.sankashaList.firstWhere(
-                (element) => element.sankashaID == sankashaID
-        );
+          TachiDataObj tachiDataObj = getTachiDataObjFromMap(
+              tachiMap, sankashaData);
+          gyoshaDataObj.tachiList.add(tachiDataObj);
 
-        TachiDataObj tachiDataObj = getTachiDataObjFromMap(tachiMap, sankashaData);
-        gyoshaDataObj.tachiList.add(tachiDataObj);
-
-        final List<Map<String, dynamic>> shaMaps =
-        await queryDataMaps('sha_data', 'tachiID', tachiMap['tachiID'],db: db);
+          final List<Map<String, dynamic>> shaMaps =
+          await queryDataMaps(
+              'sha_data', 'tachiID', tachiMap['tachiID'], db: db);
           for (var shaMap in shaMaps) {
             ShaData shaData = getShaDataFromMap(shaMap);
             tachiDataObj.shaList.add(shaData);
           }
+        }
       }
     }
     return newList;

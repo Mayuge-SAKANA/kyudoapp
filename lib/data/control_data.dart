@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyodoapp/data/db_define.dart';
@@ -52,16 +54,18 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
     gyoshaDataObj.sankashaList[0].gyoshaID = newGyoshaID;
     await gyoshaDataObj.addTachi(recordDB: recordDB);
 
-    List<GyoshaDataObj> newList = [...state.gyoshaDataList,gyoshaDataObj];
+    //List<GyoshaDataObj> newList = [...state.gyoshaDataList,gyoshaDataObj];
+    List<GyoshaDataObj> newList = [];
+    newList = sortGyoshaData(gyoshaDataObj);
+
     state = state.copyWith(
         gyoshaDataList: newList);
 
     recordDB.updateData('gyosha_data', 'id', dbId, gyoshaDataObj.gyoshaData);
     recordDB.updateData('sankasha_data', 'sankashaID', gyoshaDataObj.sankashaList[0].sankashaID, gyoshaDataObj.sankashaList[0]);
-
-
-
   }
+
+
 
   void removeGyoshaData(String gyoshaID,WidgetRef ref) async{
 
@@ -95,8 +99,14 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
     }).toList();
 
     state = state.copyWith(
+        gyoshaDataList: newList);
+
+    newList = sortGyoshaData(newGyoshaData);
+
+    state = state.copyWith(
         gyoshaDataList: newList,
     );
+
     ref.watch(recordDBProvider).updateGyoshaData(newGyoshaData);
     
   }
@@ -107,5 +117,40 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
       gyoshaDataList: newList,
     );
   }
+
+  List<GyoshaDataObj> sortGyoshaData(GyoshaDataObj newData){
+    List<GyoshaDataObj> newList = [];
+    bool addFlag = true;
+
+    if(state.gyoshaDataList.isEmpty){
+      return [newData];
+    }
+
+    state.gyoshaDataList.removeWhere((element) => element.gyoshaID==newData.gyoshaID);
+
+
+    for(int i=0;i<state.gyoshaDataList.length;i++){
+      var gyoshaDataObj = state.gyoshaDataList[i];
+
+      if(i==0&&newData.gyoshaData.startDateTime.isBefore(gyoshaDataObj.gyoshaData.startDateTime)){
+        newList.add(newData);
+        addFlag = false;
+      } else if(addFlag&&newData.gyoshaData.startDateTime.isBefore(gyoshaDataObj.gyoshaData.startDateTime)){
+        newList.add(newData);
+        addFlag = false;
+      }else if(addFlag&&newData.gyoshaData.startDateTime==gyoshaDataObj.gyoshaData.startDateTime){
+        newList.add(newData);
+        addFlag = false;
+      }
+      newList.add(gyoshaDataObj);
+    }
+    if(addFlag){
+      newList.add(newData);
+    }
+
+
+    return newList;
+  }
+
 }
 

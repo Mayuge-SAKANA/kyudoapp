@@ -90,7 +90,10 @@ class ShakaiResultDataObj{
 
   String generateResultString(String appUserName){
     String result = "";
-    result += gyoshaDataObj.gyoshaData.gyoshaName+"\n";
+    String dateStr = gyoshaDataObj.gyoshaData.startDateTime.year.toString()+"年"+
+        gyoshaDataObj.gyoshaData.startDateTime.month.toString()+"月"+
+        gyoshaDataObj.gyoshaData.startDateTime.day.toString()+"日";
+    result += gyoshaDataObj.gyoshaData.gyoshaName+"("+dateStr+")"+"\n";
     result += "*--*\n";
 
 
@@ -101,6 +104,9 @@ class ShakaiResultDataObj{
         continue;
       }
       SankashaResultDataObj data = sankashaResultMap[sankashaID]!;
+      if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shiai||gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shakai){
+        result+=(rankingMap[sankashaID]??0).toString()+"位";
+      }
       result+= data.totalSha>0?(data.atariSha).toString()+"本/"+(data.totalSha).toString()+"本":"-本/-本";
       result+= "(";
       result+= data.totalSha>0?(100*data.atariSha/data.totalSha).toStringAsFixed(1):"-";
@@ -114,9 +120,6 @@ class ShakaiResultDataObj{
       result += "*--*\n";
       result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!+"\n";
     }
-
-
-
     return result;
   }
 
