@@ -247,6 +247,36 @@ class MainGyoshaCardButtonBar extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    void myShowModalBottomSheetDelete(BuildContext context){
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('データの削除'),
+            content: Text("本当に削除しますか？"),
+
+            actions: <Widget>[
+              TextButton(
+                child: const Text('キャンセル'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  _deleteSelectedGyoshaData();
+                  Navigator.pop(context);
+                  //OKを押したあとの処理
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
@@ -259,7 +289,7 @@ class MainGyoshaCardButtonBar extends StatelessWidget{
       children: <Widget>[
         TextButton(
           style: flatButtonStyle,
-          onPressed: () {_deleteSelectedGyoshaData();},
+          onPressed: () {myShowModalBottomSheetDelete(context);},
           child: Column(
             children: const <Widget>[
               Icon(Icons.delete),
@@ -398,7 +428,7 @@ class GyoshaDataScoreTable extends ConsumerWidget{
             children: [
                   Container(
                   alignment: Alignment.centerLeft,
-                    child: gyoshaType==GyoshaType.renshu?
+                    child: (gyoshaType==GyoshaType.renshu||gyoshaType==GyoshaType.dantai)?
                         const SizedBox():
                         FittedBox(child: Text("$rank位"),),),
                   Container(
@@ -448,10 +478,30 @@ class GyoshaDataScoreTable extends ConsumerWidget{
           viewData.add(item);
           viewData.add(const Divider());
         }
-      return
+        String dantaiResult = "";
+        if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai){
+          dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalAtariSha.toString();
+          dantaiResult += "本/";
+          dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalSha.toString();
+          dantaiResult += "本(";
+          dantaiResult+= shakaiData.totalSha==0?"-":(100*shakaiData.totalAtariSha/shakaiData.totalSha).toStringAsFixed(1);
+          dantaiResult += ")";
+        }
+
+
+        return
         Column(
           children: [
             ...viewData,
+            gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai?
+            Align(
+              alignment: Alignment.centerRight,
+              child: FittedBox(
+                child:
+                Text("合計"+dantaiResult),
+              ),
+            ):
+            SizedBox(),
           ],
         );
 

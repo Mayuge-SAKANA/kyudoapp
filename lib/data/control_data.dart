@@ -132,10 +132,10 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
     for(int i=0;i<state.gyoshaDataList.length;i++){
       var gyoshaDataObj = state.gyoshaDataList[i];
 
-      if(i==0&&newData.gyoshaData.startDateTime.isBefore(gyoshaDataObj.gyoshaData.startDateTime)){
+      if(i==0&&newData.gyoshaData.startDateTime.isAfter(gyoshaDataObj.gyoshaData.startDateTime)){
         newList.add(newData);
         addFlag = false;
-      } else if(addFlag&&newData.gyoshaData.startDateTime.isBefore(gyoshaDataObj.gyoshaData.startDateTime)){
+      } else if(addFlag&&newData.gyoshaData.startDateTime.isAfter(gyoshaDataObj.gyoshaData.startDateTime)){
         newList.add(newData);
         addFlag = false;
       }else if(addFlag&&newData.gyoshaData.startDateTime==gyoshaDataObj.gyoshaData.startDateTime){

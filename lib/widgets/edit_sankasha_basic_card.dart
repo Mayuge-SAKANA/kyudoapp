@@ -17,7 +17,10 @@ class SankashaCardContents extends  ConsumerWidget {
 
     void myShowModalBottomSheetSankasha(BuildContext context, [String sankashaID=""]){
       String tempText = "";
-      String initName = sankashaID==""? "":editingGyoshaData.getSankashaAt(sankashaID).sankashaName;
+      String initName = sankashaID==""? "":
+      editingGyoshaData.getSankashaAt(sankashaID).isAppUser==false?
+      editingGyoshaData.getSankashaAt(sankashaID).sankashaName:ref.watch(userDatasProvider).userName;
+
       showDialog(
         context: context,
         builder: (_) {
@@ -55,6 +58,9 @@ class SankashaCardContents extends  ConsumerWidget {
                       editingGyoshaData.addSankasha(tempText,recordDB:ref.read(recordDBProvider));
                     }else{
                       editingGyoshaData.getSankashaAt(sankashaID).sankashaName=tempText;
+                      if(editingGyoshaData.getSankashaAt(sankashaID).isAppUser){
+                        ref.read(userDatasProvider.notifier).changeName(tempText);
+                      }
                     }
                   }
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
@@ -79,16 +85,23 @@ class SankashaCardContents extends  ConsumerWidget {
             ),
             SizedBox(
               width: constrain.maxWidth*0.5,
-              child: Text(sankashaList[index].isAppUser==false?sankashaList[index].sankashaName:ref.watch(userDatasProvider).userName,overflow: TextOverflow.ellipsis),
+              child: Text(
+                  sankashaList[index].isAppUser==false?sankashaList[index].sankashaName:ref.watch(userDatasProvider).userName,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                        TextStyle(color: sankashaList[index].isAppUser==true?Theme.of(context).colorScheme.primary:null),
+              ),
+
             ),
             SizedBox(
               width: constrain.maxWidth*0.2,
-              child: sankashaList[index].isAppUser==false?ElevatedButton(
+              child: //sankashaList[index].isAppUser==false?
+              ElevatedButton(
                 child: const Text('編集'),
                 onPressed: () {
                   myShowModalBottomSheetSankasha(context,sankashaList[index].sankashaID);
                 },
-              ):const SizedBox(),
+              ),//:const SizedBox(),
             ),
 
             SizedBox(

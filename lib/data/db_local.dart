@@ -233,7 +233,7 @@ class LocalRecordDB extends RecordDB{
     final db = await gyoshaDatabase;
     final List<Map<String, dynamic>> maps = await db.query(
         'gyosha_data',
-        orderBy: 'startYear ASC, startMonth ASC, startDay ASC, startHour ASC, startMinute ASC',
+        orderBy: 'startYear DESC, startMonth DESC, startDay DESC, startHour DESC, startMinute DESC',
     );
     final List<GyoshaDataObj> newList = [];
 

@@ -9,6 +9,7 @@ import '../data/data_define.dart';
 import '../data/data_gyosha_object.dart';
 import '../data/data_gyosha_entity.dart';
 import '../data/data_sankasha_entity.dart';
+import 'icon_asset.dart';
 
 
 class GyoshaSettingSliverList extends ConsumerStatefulWidget{
@@ -18,7 +19,7 @@ class GyoshaSettingSliverList extends ConsumerStatefulWidget{
 }
 
 class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
-  final _toggleList = <bool>[false, false, false];
+  final List<bool> _toggleList = List.generate(GyoshaType.values.length, (index) => false);
 
 
   @override
@@ -174,12 +175,13 @@ class GyoshaTypeToggleButton extends ConsumerStatefulWidget{
 }
 
 class _GyoshaTypeToggleButton extends ConsumerState<GyoshaTypeToggleButton> {
-  final _toggleList = <bool>[false, false, false];
+  final List<bool> _toggleList = List.generate(GyoshaType.values.length, (index) => false);
   @override
   void initState() {
     super.initState();
     GyoshaType initType = ref.read(gyoshaDatasProvider).getEditingGyoshaData().gyoshaData.gyoshaType;
     _toggleList[initType.index]=true;
+    print(_toggleList.length);
   }
   @override
   Widget build(BuildContext context){
@@ -188,10 +190,11 @@ class _GyoshaTypeToggleButton extends ConsumerState<GyoshaTypeToggleButton> {
     return Center(
       child:
       ToggleButtons(
-        children: const [
-          Text("練習"),
-          Text("射会"),
-          Text("試合")
+        children:  [
+          ...List.generate(GyoshaType.values.length,
+                  (index) {
+                    return Text(gyoshaTypeString[GyoshaType.values[index]]!);
+                  }),
         ],
         isSelected: _toggleList,
         onPressed: (index) {

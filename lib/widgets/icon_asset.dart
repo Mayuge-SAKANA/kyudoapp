@@ -24,5 +24,6 @@ Map<ShaResultType, IconData> shaResultIcon = {
 Map<GyoshaType, String> gyoshaTypeString = {
   GyoshaType.renshu:"練習",
   GyoshaType.shakai:"射会",
-  GyoshaType.shiai:"試合"
+  GyoshaType.shiai:"試合",
+  GyoshaType.dantai:"団体",
 };

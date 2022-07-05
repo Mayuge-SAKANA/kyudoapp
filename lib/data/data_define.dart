@@ -32,6 +32,7 @@ enum GyoshaType{
   renshu, //練習
   shakai, //射会
   shiai, //試合
+  dantai,//団体戦
 }
 
 enum ShaResultType{
@@ -59,6 +60,9 @@ class ShakaiResultDataObj{
   List<MapEntry>orderedScoreList = [];
   final Map<String, int>rankingMap = {};
 
+  int get totalSha => sankashaResultMap.values.fold(0, (previousValue, element) => previousValue+element.totalSha);
+  int get totalAtariSha => sankashaResultMap.values.fold(0, (previousValue, element) => previousValue+element.atariSha);
+
   ShakaiResultDataObj(this.gyoshaDataObj){
     sankashaResultMap = Map.fromIterables(
         gyoshaDataObj.sankashaList.map((e) => e.sankashaID),
@@ -67,6 +71,7 @@ class ShakaiResultDataObj{
     _createOrderedScoreList();
     _setRankingIndex();
   }
+
 
   void _createOrderedScoreList(){
     List<MapEntry> _orderData(Map<String, dynamic>maps,
@@ -88,6 +93,8 @@ class ShakaiResultDataObj{
     }
   }
 
+
+
   String generateResultString(String appUserName){
     String result = "";
     String dateStr = gyoshaDataObj.gyoshaData.startDateTime.year.toString()+"年"+
@@ -99,27 +106,46 @@ class ShakaiResultDataObj{
 
     for(var sankashaData in gyoshaDataObj.sankashaList){
       var sankashaID = sankashaData.sankashaID;
+      if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shiai||gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shakai){
+        result+=(rankingMap[sankashaID]??0).toString()+"位 ";
+      }
       result += sankashaData.isAppUser==true? appUserName.padRight(5,"　"):sankashaData.sankashaName.padRight(5,"　");
       if(sankashaResultMap.containsKey(sankashaID)==false){
         continue;
       }
       SankashaResultDataObj data = sankashaResultMap[sankashaID]!;
-      if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shiai||gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.shakai){
-        result+=(rankingMap[sankashaID]??0).toString()+"位";
+
+      if(gyoshaDataObj.gyoshaData.gyoshaType!=GyoshaType.dantai){
+        result+= data.totalSha>0?(data.atariSha).toString()+"本/"+(data.totalSha).toString()+"本":"-本/-本";
+        result+= "(";
+        result+= data.totalSha>0?(100*data.atariSha/data.totalSha).toStringAsFixed(1):"-";
+        result+= "%)\n";
       }
-      result+= data.totalSha>0?(data.atariSha).toString()+"本/"+(data.totalSha).toString()+"本":"-本/-本";
-      result+= "(";
-      result+= data.totalSha>0?(100*data.atariSha/data.totalSha).toStringAsFixed(1):"-";
-      result+= "%)\n";
+
       for(var item in data.resultList){
         result += shaResultString[item]!;
       }
       result+="\n";
     }
-    if(gyoshaDataObj.gyoshaData.memoText!=null){
-      result += "*--*\n";
-      result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!+"\n";
+
+    result += "*--*\n";
+    if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai){
+      String dantaiResult = "合計";
+      dantaiResult += totalSha==0?"-":totalAtariSha.toString();
+      dantaiResult += "本/";
+      dantaiResult += totalSha==0?"-":totalSha.toString();
+      dantaiResult += "本(";
+      dantaiResult+= totalSha==0?"-":(100*totalAtariSha/totalSha).toStringAsFixed(1);
+      dantaiResult += ")";
+      result += dantaiResult;
+      result += "\n";
     }
+
+    result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!;
+
+
+
+
     return result;
   }
 

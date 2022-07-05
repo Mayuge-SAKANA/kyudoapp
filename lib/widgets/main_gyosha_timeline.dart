@@ -34,11 +34,13 @@ class MainView extends ConsumerWidget {
       ),
       body: ListView.builder(
         shrinkWrap: true,
-        reverse: true,
+        reverse: false,
         controller: _scrollController,
-        itemCount: gyoshaDataList.length,
+        itemCount: gyoshaDataList.length+1,
         itemBuilder:(context, index) {
-          return GyoshaMainDataExpansionTile(gyoshaDataList[index].gyoshaID,key: ValueKey(gyoshaDataList[index].gyoshaID),);
+          return index==gyoshaDataList.length?
+              SizedBox(height: MediaQuery.of(context).size.height*0.3)
+              :GyoshaMainDataExpansionTile(gyoshaDataList[index].gyoshaID,key: ValueKey(gyoshaDataList[index].gyoshaID),);
         }
       ),
 
@@ -59,7 +61,7 @@ class GyoshaViewFloatingActionButton extends StatelessWidget{
       onPressed: () {
         createNewGyoshaData();
         _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+        _scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 500),
         curve: Curves.linear,
         );

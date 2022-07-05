@@ -19,16 +19,22 @@ class GyoshaEditPage extends ConsumerWidget{
       appBar: AppBar(
         title: const Text('行射記録'),
         actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context){
-                    return const EditingGyoshaText();
-                  })
-              );
-            },
-            icon: const Icon(Icons.text_snippet),
+          Row(
+            children: [
+              Text("メモ"),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context){
+                        return const EditingGyoshaText();
+                      })
+                  );
+                },
+                icon: const Icon(Icons.text_snippet),
+              ),
+            ],
           ),
+
         ],
       ),
       body:

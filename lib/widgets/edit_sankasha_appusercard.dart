@@ -39,7 +39,7 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
 
             SizedBox(
               width:constrain.maxWidth*0.6,
-              child: Text("あなた："),
+              child: Text("あなた："+ref.watch(userDatasProvider).userName),
             ),
             SizedBox(
               width: constrain.maxWidth*0.35,

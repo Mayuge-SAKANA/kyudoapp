@@ -84,7 +84,7 @@ class NameSpace extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Center(
-      child:Text(viewName==""? "名無し": viewName,overflow: TextOverflow.ellipsis),
+      child:FittedBox(child: Text(viewName==""? "名無し": viewName)),
     );
   }
 }
@@ -114,7 +114,7 @@ class ScoreEditSpace extends ConsumerWidget {
         var element = SizedBox(
           width: constrain.maxWidth/5,
           height: constrain.maxWidth/5,
-          child: SelectPopUpMenuButton(shaData,_deleteItem,_setData),
+          child: SelectPopUpMenuButton(shaData,_deleteItem,_setData,key: ValueKey(shaData.shaID),),
         );
 
         if((i+1)%4==1&&i>2){
@@ -152,9 +152,8 @@ class SelectPopUpMenuButton extends StatelessWidget{
   Widget build(BuildContext context){
     return PopupMenuButton(
       color: Theme.of(context).colorScheme.primaryContainer,
-      icon: Icon(shaResultMap[shaData.shaResult]!.icon),
-      offset: const Offset(0,0),
-      initialValue: false,
+      child: Icon(shaResultMap[shaData.shaResult]!.icon),
+      initialValue: shaData.shaResult,
       onSelected: (shaResult){
         ShaResultType result = shaResult as ShaResultType;
         if(result==ShaResultType.delete){
@@ -165,10 +164,16 @@ class SelectPopUpMenuButton extends StatelessWidget{
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        for(int i=0; i<shaResultMap.length; i++)PopupMenuItem(
-          child: shaResultMap.values.toList()[i],
-          value: shaResultMap.keys.toList()[i] ,
-        ),
+       ...List.generate(shaResultMap.length, (index){
+         return PopupMenuItem(
+           child:Align(
+             alignment: Alignment.centerLeft,
+             child: shaResultMap.values.toList()[index],
+           )
+           ,
+           value: shaResultMap.keys.toList()[index] ,
+         );
+       }),
       ],
     );
   }
