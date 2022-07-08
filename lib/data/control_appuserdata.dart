@@ -1,17 +1,30 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 
+
+var _defaultColor = Color(0x00c14333);
 
 class UserData{
   final String userName;
-  UserData({required this.userName});
-  UserData copyWith({String? userName}){
-    return UserData(userName: userName??this.userName);
+  final bool isDark;
+  final Color color;
+  final ThemeData themeData;
+  UserData({required this.userName, required this.isDark, required this.color}):
+  themeData = ThemeData(
+    colorSchemeSeed: color,//Colors.blueGrey,
+    brightness: isDark?Brightness.dark:Brightness.light,
+    useMaterial3: true,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+    fontFamily: 'NotoSansJP',
+  );
+  UserData copyWith({String? userName, ThemeData? themeData, bool? isDark,Color? color}){
+    return UserData(userName: userName??this.userName, isDark: isDark??this.isDark, color:  color??this.color);
   }
 }
 
 class UserDatasNotifier extends StateNotifier<UserData> {
-  UserDatasNotifier() : super(UserData(userName: "あなた",),){
+  UserDatasNotifier() : super(UserData(userName: "あなた",isDark: true, color: _defaultColor),){
       loadName();
   }
 
@@ -21,7 +34,14 @@ class UserDatasNotifier extends StateNotifier<UserData> {
     state = state.copyWith(userName: userName);
   }
 
-  void loadName()async {
+  void changeDark(bool isDark){
+    state = state.copyWith(isDark: isDark);
+  }
+  void changeColor(Color color){
+    state = state.copyWith(color: color);
+  }
+
+  void loadName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userName = prefs.getString('userName')??"あなた";
     state = state.copyWith(userName: userName);

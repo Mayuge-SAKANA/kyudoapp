@@ -40,13 +40,7 @@ class KyudoApp extends ConsumerWidget {
     ref.read(gyoshaDatasProvider.notifier).loadGyoshaList(ref);
     return MaterialApp(
       title: 'Kyudo App',
-      theme: ThemeData(
-        colorSchemeSeed:  Color(0x00c14333),//Colors.blueGrey,
-        brightness: Brightness.dark,
-        useMaterial3: true,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'NotoSansJP',
-      ),
+      theme: ref.watch(userDatasProvider).themeData,
       debugShowCheckedModeBanner: false,
       home: const MainView(),
     );
