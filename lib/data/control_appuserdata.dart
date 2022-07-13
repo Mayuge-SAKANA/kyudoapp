@@ -26,6 +26,8 @@ class UserData{
 class UserDatasNotifier extends StateNotifier<UserData> {
   UserDatasNotifier() : super(UserData(userName: "あなた",isDark: true, color: _defaultColor),){
       loadName();
+      loadDark();
+      loadColor();
   }
 
   void changeName(String userName)async{
@@ -34,17 +36,35 @@ class UserDatasNotifier extends StateNotifier<UserData> {
     state = state.copyWith(userName: userName);
   }
 
-  void changeDark(bool isDark){
+  void changeDark(bool isDark)async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isDark', isDark);
     state = state.copyWith(isDark: isDark);
   }
-  void changeColor(Color color){
+  void changeColor(Color color)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('color', color.value);
     state = state.copyWith(color: color);
   }
+
 
   void loadName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userName = prefs.getString('userName')??"あなた";
     state = state.copyWith(userName: userName);
+  }
+
+  void loadDark() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isDark = prefs.getBool('isDark')??true;
+    state = state.copyWith(isDark: isDark);
+  }
+
+  void loadColor() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int value = prefs.getInt('color')??0x00c14333;
+
+    state = state.copyWith(color: Color(value));
   }
 
 }

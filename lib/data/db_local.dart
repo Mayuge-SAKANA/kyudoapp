@@ -150,6 +150,7 @@ class LocalRecordDB extends RecordDB{
       where: "$idName = ?",
       whereArgs: [id],
     );
+    print(ret);
 
   }
 
@@ -262,21 +263,29 @@ class LocalRecordDB extends RecordDB{
       if (tachiMaps.isNotEmpty) {
         for (var tachiMap in tachiMaps) {
           String sankashaID = tachiMap['sankashaID'];
-          SankashaData sankashaData = gyoshaDataObj.sankashaList.firstWhere(
-                  (element) => element.sankashaID == sankashaID
-          );
+          try {
+            SankashaData sankashaData = gyoshaDataObj.sankashaList.firstWhere(
+                  (element) => element.sankashaID == sankashaID,
+            );
 
-          TachiDataObj tachiDataObj = getTachiDataObjFromMap(
-              tachiMap, sankashaData);
-          gyoshaDataObj.tachiList.add(tachiDataObj);
+            TachiDataObj tachiDataObj = getTachiDataObjFromMap(
+                tachiMap, sankashaData);
+            gyoshaDataObj.tachiList.add(tachiDataObj);
 
-          final List<Map<String, dynamic>> shaMaps =
-          await queryDataMaps(
-              'sha_data', 'tachiID', tachiMap['tachiID'], db: db);
-          for (var shaMap in shaMaps) {
-            ShaData shaData = getShaDataFromMap(shaMap);
-            tachiDataObj.shaList.add(shaData);
-          }
+            final List<Map<String, dynamic>> shaMaps =
+            await queryDataMaps(
+                'sha_data', 'tachiID', tachiMap['tachiID'], db: db);
+            for (var shaMap in shaMaps) {
+              ShaData shaData = getShaDataFromMap(shaMap);
+              tachiDataObj.shaList.add(shaData);
+            }
+
+          }catch(e){
+            print(tachiMap);
+            continue;
+          };
+
+
         }
       }
     }

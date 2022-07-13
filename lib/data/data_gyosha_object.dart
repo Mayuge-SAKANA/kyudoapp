@@ -59,12 +59,13 @@ class GyoshaDataObj {
   }
 
   void removeSankashaAt(String sankashaID,{RecordDB? recordDB}){
+
     if(appUserID == sankashaID){
       isAppUserIsSankasha=false;
     }
 
     sankashaList = [...sankashaList.where((item){return item.sankashaID!=sankashaID;})];
-    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
+    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=sankashaID)];
     if(recordDB!=null){
       recordDB.deleteData('sankasha_data', 'sankashaID', sankashaID);
       recordDB.deleteData('tachi_data', 'sankashaID', sankashaID);
@@ -73,8 +74,8 @@ class GyoshaDataObj {
     setTachiIndex(recordDB:recordDB);
     setSankashaIndex(recordDB:recordDB);
 
-
   }
+
   SankashaData getSankashaAt(String sankashaID){
     return sankashaList.firstWhere((element){
       return element.sankashaID==sankashaID;
@@ -89,20 +90,22 @@ class GyoshaDataObj {
     }
   }
   void deleteAppUserData({RecordDB? recordDB})async{
+    String deleteID = appUserID;
 
-    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=appUserID)];
-    sankashaList = [...sankashaList.where((item) => item.sankashaID!=appUserID) ];
+    tachiList = [...tachiList.where((item)=>item.sankashaData.sankashaID!=deleteID)];
+    sankashaList = [...sankashaList.where((item) => item.sankashaID!=deleteID) ];
 
     isAppUserIsSankasha = false;
     if(recordDB!=null){
-      await recordDB.deleteData('sankasha_data', 'sankashaID', appUserID);
-      await recordDB.deleteData('tachi_data', 'sankashaID', appUserID);
-
+      await recordDB.deleteData('sankasha_data', 'sankashaID', deleteID);
+      await recordDB.deleteData('tachi_data', 'sankashaID', deleteID);
+      print("deleted!");
     }
-
     setTachiIndex(recordDB: recordDB);
     setSankashaIndex(recordDB: recordDB);
   }
+
+
   void addAppUserToSankasha({RecordDB? recordDB})async{
     if(isAppUserIsSankasha==false) {
       await addSankasha("ユーザ",isAppUser: true);

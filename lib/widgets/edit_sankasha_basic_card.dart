@@ -109,10 +109,12 @@ class SankashaCardContents extends  ConsumerWidget {
               child: IconButton(
                 onPressed: () {
                   if(sankashaList[index].isAppUser==true){
-                    editingGyoshaData.isAppUserIsSankasha = false;
+                    editingGyoshaData.deleteAppUserData(recordDB:ref.read(recordDBProvider));
+                  }else{
+                    editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID,recordDB:ref.read(recordDBProvider));
                   }
-                  editingGyoshaData.removeSankashaAt(sankashaList[index].sankashaID,recordDB:ref.read(recordDBProvider));
                   ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
+
                 },
                 icon: const Icon(Icons.delete),
               ),
