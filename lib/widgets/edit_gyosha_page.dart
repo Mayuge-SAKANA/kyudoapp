@@ -14,14 +14,14 @@ class GyoshaEditPage extends ConsumerWidget{
   @override
   Widget build(BuildContext context,WidgetRef ref) {
     GyoshaDataObj editingGyoshaData = ref.watch(gyoshaDatasProvider).getEditingGyoshaData();
-    var _scrollController = ScrollController();
+    var scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(
         title: const Text('行射記録'),
         actions: <Widget>[
           Row(
             children: [
-              Text("メモ"),
+              const Text("メモ"),
               IconButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -39,7 +39,7 @@ class GyoshaEditPage extends ConsumerWidget{
       ),
       body:
       CustomScrollView(
-        controller: _scrollController,
+        controller: scrollController,
         slivers: const [
           GyoshaSettingSliverList(),
           GyoshaSliverReorderableListView(),
@@ -51,8 +51,8 @@ class GyoshaEditPage extends ConsumerWidget{
           await editingGyoshaData.addTachi(recordDB:ref.read(recordDBProvider));
           ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
 
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
             duration: const Duration(milliseconds: 500),
             curve: Curves.linear,
           );

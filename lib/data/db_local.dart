@@ -13,7 +13,8 @@ class LocalRecordDB extends RecordDB{
   final String dbPath;
 
   LocalRecordDB({this.dbPath = "data_db.db"}){
-    //deleteDatabase(dbPath);
+
+
   }
 
   Future<void> deleteAll() async{
@@ -22,7 +23,7 @@ class LocalRecordDB extends RecordDB{
 
   Future<Database> get gyoshaDatabase async {
     // openDatabase() データベースに接続
-    final Future<Database> _database = openDatabase(
+    final Future<Database> database =openDatabase(
       // getDatabasesPath() データベースファイルを保存するパス取得
       join(await getDatabasesPath(), dbPath),
       onCreate: (db, version) {
@@ -31,9 +32,15 @@ class LocalRecordDB extends RecordDB{
         _executeCreateTachiDB(db);
         _executeCreateShaDB(db);
       },
-      version: 1,
+      onUpgrade: (db,a,b){
+        db.execute("ALTER TABLE gyosha_data ADD COLUMN gyoshaEnKin INTEGER");
+        //ALTER  TABLE  テーブル名  ADD  COLUMN  カラム名  データ型  オプション;
+      },
+
+      version: 2,
     );
-    return _database;
+
+    return database;
   }
 
   void _executeCreateGyoshaDB(Database db){
@@ -56,6 +63,7 @@ class LocalRecordDB extends RecordDB{
           "finishHour INTEGER,"+
           "finishMinute INTEGER,"+
           "memoText TEXT"+
+          "gyoshaEnKin INTEGER"+
           ");"
     );
   }
@@ -115,7 +123,7 @@ class LocalRecordDB extends RecordDB{
 
     db = db??await gyoshaDatabase;
     db = db as Database;
-    var ret = await db.update(
+    await db.update(
       tableName,
       data.toMap(),
       where: "$idName = ?",
@@ -145,12 +153,12 @@ class LocalRecordDB extends RecordDB{
 
     db = db??await gyoshaDatabase;
     db = db as Database;
-    var ret = await db.delete(
+    await db.delete(
       tableName,
       where: "$idName = ?",
       whereArgs: [id],
     );
-    print(ret);
+
 
   }
 
@@ -177,14 +185,14 @@ class LocalRecordDB extends RecordDB{
       map['startMonth']??0,
       map['startDay']??0,
       map['startHour']??0,
-      map['startMinutes']??0,
+      map['startMinute']??0,
     );
     DateTime finishDateTime = DateTime(
       map['finishYear']??0,
       map['finishMonth']??0,
       map['finishDay']??0,
       map['finishHour']??0,
-      map['finishMinutes']??0,
+      map['finishMinute']??0,
     );
 
     GyoshaDataObj gyoshaDataObj = GyoshaDataObj(
@@ -194,10 +202,11 @@ class LocalRecordDB extends RecordDB{
         startDateTime,finishDateTime,
         gyoshaState: GyoshaState.values[map['gyoshaState']],
         memoText: map['memoText']??"",
+        gyoshaEnKin: map['gyoshaEnKin']==null?GyoshaEnKin.kinteki:GyoshaEnKin.values[map['gyoshaEnKin']],
         gyoshaID:map['gyoshaID'],
         newFlag: false,
     );
-
+    //print(gyoshaDataObj.gyoshaData.gyoshaEnKin);
     return gyoshaDataObj;
 
   }
@@ -232,6 +241,7 @@ class LocalRecordDB extends RecordDB{
   @override
   Future<List<GyoshaDataObj>> getGyoshaDataObjList() async {
     final db = await gyoshaDatabase;
+
     final List<Map<String, dynamic>> maps = await db.query(
         'gyosha_data',
         orderBy: 'startYear DESC, startMonth DESC, startDay DESC, startHour DESC, startMinute DESC',
@@ -281,7 +291,7 @@ class LocalRecordDB extends RecordDB{
             }
 
           }catch(e){
-            print(tachiMap);
+
             continue;
           };
 

@@ -23,3 +23,26 @@ class SitsuIcon {
 
   static const IconData sitsu = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
+
+class SitsuIcon2 {
+  SitsuIcon2._();
+
+  static const _kFontFam = 'SitsuIcon2';
+  static const String? _kFontPkg = null;
+
+  static const IconData sitsu2 = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+}
+
+class EntekiNumbers {
+  EntekiNumbers._();
+
+  static const _kFontFam = 'EntekiNumbers';
+  static const String? _kFontPkg = null;
+
+  static const IconData num_three = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData num_zero = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData num_five = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData num_nine = IconData(0xe807, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData num_seven = IconData(0xe808, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData num_ten = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+}

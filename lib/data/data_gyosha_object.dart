@@ -29,8 +29,10 @@ class GyoshaDataObj {
 
 
   GyoshaDataObj(mainEditorName, gyoshaName, gyoshaType, startDateTime,finishDateTime,
-  {memoText = '',gyoshaState = GyoshaState.offline,int startCountNumber = -1,gyoshaID = "",bool newFlag = true,RecordDB? recordDB}):
-      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('TEST',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName, startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState,memoText: memoText)
+  {memoText = '',gyoshaState = GyoshaState.offline,
+    int startCountNumber = -1,gyoshaID = "",bool newFlag = true,RecordDB? recordDB, gyoshaEnKin = GyoshaEnKin.kinteki}):
+      gyoshaData = GyoshaData(gyoshaID == "" ?generateID('TEST',_gyoshaInstanceNumber+1):gyoshaID,mainEditorName, gyoshaName,
+          startDateTime, finishDateTime,gyoshaType: gyoshaType,gyoshaState: gyoshaState,memoText: memoText,gyoshaEnKin: gyoshaEnKin)
   {
 
    // if(newFlag){
@@ -99,7 +101,6 @@ class GyoshaDataObj {
     if(recordDB!=null){
       await recordDB.deleteData('sankasha_data', 'sankashaID', deleteID);
       await recordDB.deleteData('tachi_data', 'sankashaID', deleteID);
-      print("deleted!");
     }
     setTachiIndex(recordDB: recordDB);
     setSankashaIndex(recordDB: recordDB);

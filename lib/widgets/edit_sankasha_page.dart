@@ -102,8 +102,8 @@ class _SankashaEditPage extends ConsumerState<SankashaEditPage>{
           const AppUserSankashaCard(),
           Expanded(
             child:
-            sankashaList.length==0?
-            Text("参加者を入力してください")
+            sankashaList.isEmpty?
+            const Text("参加者を入力してください")
             :ReorderableListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 itemBuilder: (context, index) {

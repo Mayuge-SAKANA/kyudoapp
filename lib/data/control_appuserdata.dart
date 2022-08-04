@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
 
-var _defaultColor = Color(0x00c14333);
+var _defaultColor = const Color(0x00c14333);
 
 class UserData{
   final String userName;

@@ -35,7 +35,7 @@ class _GyoshaSettingSliverList extends ConsumerState<GyoshaSettingSliverList>{
     if(editingGyoshaData.isLocked){
       lockColor = Theme.of(context).colorScheme.primary;
     }else{
-      lockColor = Color.fromRGBO(100, 100, 100, 1);
+      lockColor = const Color.fromRGBO(100, 100, 100, 1);
     }
 
 
@@ -181,7 +181,6 @@ class _GyoshaTypeToggleButton extends ConsumerState<GyoshaTypeToggleButton> {
     super.initState();
     GyoshaType initType = ref.read(gyoshaDatasProvider).getEditingGyoshaData().gyoshaData.gyoshaType;
     _toggleList[initType.index]=true;
-    print(_toggleList.length);
   }
   @override
   Widget build(BuildContext context){

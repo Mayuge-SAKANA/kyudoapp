@@ -7,27 +7,27 @@ class ProfileSetting extends ConsumerWidget{
 
   ProfileSetting({Key? key}) : super(key: key);
   List<Color> colorList = [
-    Color(0x00c14333),
-    Color(0x00094F6A),
-    Color(0x0058456b),
-    Color(0x00ccab09)
+    const Color(0x00c14333),
+    const Color(0x00094F6A),
+    const Color(0x0058456b),
+    const Color(0x00ccab09)
   ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref){
-    bool _isOn = ref.watch(userDatasProvider).isDark;
+    bool isOn = ref.watch(userDatasProvider).isDark;
     return Scaffold(
       appBar: AppBar(
-        title: Text("プロフィール設定"),
+        title: const Text("プロフィール設定"),
       ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 50,),
-              Text("名前の設定",style: TextStyle(fontSize: 20),),
-              Text("あなたの名前を入力してください"),
-              Text("現在の設定："+ref.watch(userDatasProvider).userName),
+              const SizedBox(height: 50,),
+              const Text("名前の設定",style: TextStyle(fontSize: 20),),
+              const Text("あなたの名前を入力してください"),
+              Text("現在の設定：${ref.watch(userDatasProvider).userName}"),
               TextFormField(
                 maxLength: 5,
                 decoration: const InputDecoration(hintText: '名前を入力(5文字まで)'),
@@ -52,27 +52,27 @@ class ProfileSetting extends ConsumerWidget{
                 },
               ),
 
-              SizedBox(height: 50,),
-              Text("ダークモード: "+(_isOn?"ON":"OFF"),style: TextStyle(fontSize: 20),),
+              const SizedBox(height: 50,),
+              Text("ダークモード: ${isOn?"ON":"OFF"}",style: const TextStyle(fontSize: 20),),
               Switch(
                 activeColor:  Theme.of(context).colorScheme.primary,
                 activeTrackColor:  Theme.of(context).colorScheme.primaryContainer,
                 inactiveThumbColor: Theme.of(context).colorScheme.primary,
-                value: _isOn,
+                value: isOn,
                 onChanged: (value) {
-                  _isOn = value;
-                  ref.watch(userDatasProvider.notifier).changeDark(_isOn);
+                  isOn = value;
+                  ref.watch(userDatasProvider.notifier).changeDark(isOn);
                 },
               ),
 
-              SizedBox(height: 50,),
-              Text("色",style: TextStyle(fontSize: 20),),
+              const SizedBox(height: 50,),
+              const Text("色",style: TextStyle(fontSize: 20),),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ...List.generate(colorList.length, (index) {
                     return Padding(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: SizedBox(
                         height: 50,
                         width: 50,
@@ -83,7 +83,6 @@ class ProfileSetting extends ConsumerWidget{
                             borderRadius: BorderRadius.circular(25.0),
                             onTap: () {
                               ref.read(userDatasProvider.notifier).changeColor(colorList[index]);
-                              print("tapped");
                             },
                           ),
                         ),

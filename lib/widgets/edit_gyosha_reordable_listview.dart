@@ -152,7 +152,6 @@ class SelectPopUpMenuButton extends StatelessWidget{
   Widget build(BuildContext context){
     return PopupMenuButton(
       color: Theme.of(context).colorScheme.primaryContainer,
-      child: Icon(shaResultMap[shaData.shaResult]!.icon),
       initialValue: shaData.shaResult,
       onSelected: (shaResult){
         ShaResultType result = shaResult as ShaResultType;
@@ -164,17 +163,12 @@ class SelectPopUpMenuButton extends StatelessWidget{
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-       ...List.generate(shaResultMap.length, (index){
-         return PopupMenuItem(
-           child:Align(
-             alignment: Alignment.centerLeft,
-             child: shaResultMap.values.toList()[index],
-           )
-           ,
-           value: shaResultMap.keys.toList()[index] ,
-         );
-       }),
+        for(int i=0; i<kintekiShaResultMap.length; i++)PopupMenuItem(
+          value: kintekiShaResultMap.keys.toList()[i] ,
+          child: kintekiShaResultMap.values.toList()[i],
+        ),
       ],
+      child: shaResultMap[shaData.shaResult],
     );
   }
 }
@@ -220,9 +214,9 @@ class AddPopUpMenuButton extends ConsumerWidget{
 
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        for(int i=0; i<shaResultMap.length; i++)PopupMenuItem(
-          child: shaResultMap.values.toList()[i],
-          value: shaResultMap.keys.toList()[i] ,
+        for(int i=0; i<kintekiShaResultMap.length; i++)PopupMenuItem(
+          value: kintekiShaResultMap.keys.toList()[i] ,
+          child: kintekiShaResultMap.values.toList()[i],
         ),
       ],
     );

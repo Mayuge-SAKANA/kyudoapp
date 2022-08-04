@@ -14,7 +14,7 @@ class MainView extends ConsumerWidget {
     GyoshaEditManageClass gyoshaEditManage = ref.watch(gyoshaDatasProvider);
 
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
-    var _scrollController = ScrollController();
+    var scrollController = ScrollController();
 
     void _createNewGyoshaData(){
 
@@ -35,7 +35,7 @@ class MainView extends ConsumerWidget {
       body: ListView.builder(
         shrinkWrap: true,
         reverse: false,
-        controller: _scrollController,
+        controller: scrollController,
         itemCount: gyoshaDataList.length+1,
         itemBuilder:(context, index) {
           return index==gyoshaDataList.length?
@@ -44,7 +44,7 @@ class MainView extends ConsumerWidget {
         }
       ),
 
-      floatingActionButton: GyoshaViewFloatingActionButton(_createNewGyoshaData,_scrollController),
+      floatingActionButton: GyoshaViewFloatingActionButton(_createNewGyoshaData,scrollController),
       drawer: const DrawerMenu(),
     );
   }

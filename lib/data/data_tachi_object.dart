@@ -44,7 +44,7 @@ class TachiDataObj {
   Future<void> removeShaAt(String shaID,{RecordDB? db})async{
 
     if(db!=null){
-      var ret = await db.deleteData('sha_data', 'shaID', shaID);
+      await db.deleteData('sha_data', 'shaID', shaID);
     }
     shaList.removeWhere((element) => element.shaID==shaID);
   }

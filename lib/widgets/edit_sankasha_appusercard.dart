@@ -39,15 +39,11 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
 
             SizedBox(
               width:constrain.maxWidth*0.6,
-              child: Text("あなた："+ref.watch(userDatasProvider).userName),
+              child: Text("あなた：${ref.watch(userDatasProvider).userName}"),
             ),
             SizedBox(
               width: constrain.maxWidth*0.35,
               child: ToggleButtons(
-                children: const [
-                  Text("参加"),
-                  Text("不参加"),
-                ],
                 isSelected: getToggleList(editingGyoshaData.isAppUserIsSankasha),
                 onPressed: (index) {
                   setState(() {
@@ -62,6 +58,10 @@ class _AppUserSankashaCardState extends ConsumerState<AppUserSankashaCard> {
                     ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
                   });
                 },
+                children: const [
+                  Text("参加"),
+                  Text("不参加"),
+                ],
               ),
             ),
 

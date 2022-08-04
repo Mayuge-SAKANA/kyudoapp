@@ -9,13 +9,14 @@ class GyoshaData extends DataAbstClass {
   DateTime startDateTime;//開始時間
   DateTime finishDateTime; //終了時間
   String? memoText; //メモ内容
+  GyoshaEnKin gyoshaEnKin;//遠近的
 
   String get startDateTimeStr =>dateTimeToString(startDateTime); //開始時間
   String get finishDateTimeStr => dateTimeToString(finishDateTime); //終了時間
 
   GyoshaData(this.gyoshaID,this.mainEditorName, this.gyoshaName,
        this.startDateTime,this.finishDateTime,
-      {this.gyoshaType = GyoshaType.renshu,this.gyoshaState = GyoshaState.offline, this.memoText});
+      {this.gyoshaType = GyoshaType.renshu,this.gyoshaState = GyoshaState.offline, this.memoText, this.gyoshaEnKin=GyoshaEnKin.kinteki});
 
   @override
   Map<String, dynamic> toMap() {
@@ -36,6 +37,7 @@ class GyoshaData extends DataAbstClass {
       'finishHour':finishDateTime.hour,//終了時間
       'finishMinute':finishDateTime.minute,//終了時間
       'memoText':memoText,//メモ内容
+      'gyoshaEnKin':gyoshaEnKin.index,
     };
   }
 }

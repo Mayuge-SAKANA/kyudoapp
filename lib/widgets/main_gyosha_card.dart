@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:configurable_expansion_tile_null_safety/configurable_expansion_tile_null_safety.dart';
 
-
 import '../data/control_data.dart';
 import '../data/data_define.dart';
 import '../data/data_gyosha_object.dart';
@@ -118,8 +117,7 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
   const MainGyoshaCardHeaderContents(this.gyoshaDataObj,{Key? key}) : super(key: key);
 
   String getDateTxt(DateTime startDateTime){
-    return startDateTime.year.toString().padLeft(4)+"/"+
-        startDateTime.month.toString().padLeft(2)+"/"+startDateTime.day.toString().padLeft(2);
+    return "${startDateTime.year.toString().padLeft(4)}/${startDateTime.month.toString().padLeft(2)}/${startDateTime.day.toString().padLeft(2)}";
   }
   String getTimeTxt(DateTime startDateTime, DateTime finishDateTime){
     return startDateTime.hour.toString().padLeft(2,'0')+":"+startDateTime.minute.toString().padLeft(2,'0')+
@@ -254,7 +252,7 @@ class MainGyoshaCardButtonBar extends StatelessWidget{
         builder: (_) {
           return AlertDialog(
             title: const Text('データの削除'),
-            content: Text("本当に削除しますか？"),
+            content: const Text("本当に削除しますか？"),
 
             actions: <Widget>[
               TextButton(
@@ -406,10 +404,10 @@ class GyoshaDataScoreTable extends ConsumerWidget{
       List<Widget>resultIconsList = List.generate(sankashaResultData.resultList.length, (index){
         Widget? icon;
         if(index<sankashaResultData.resultList.length){
-          IconData i =  shaResultIcon[sankashaResultData.resultList[index]]!;
-          icon = Icon(i,size: 0.95 *resultSpaceWidth/row,);
+          icon = Icon(shaResultMap[sankashaResultData.resultList[index]]!.icon,size: 0.95 *resultSpaceWidth/row,);
         }
         return SizedBox(
+
           height: resultSpaceWidth/row,
           width: resultSpaceWidth/row,
           child: icon,
@@ -485,7 +483,7 @@ class GyoshaDataScoreTable extends ConsumerWidget{
           dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalSha.toString();
           dantaiResult += "本(";
           dantaiResult+= shakaiData.totalSha==0?"-":(100*shakaiData.totalAtariSha/shakaiData.totalSha).toStringAsFixed(1);
-          dantaiResult += ")";
+          dantaiResult += "%)";
         }
 
 
@@ -498,10 +496,10 @@ class GyoshaDataScoreTable extends ConsumerWidget{
               alignment: Alignment.centerRight,
               child: FittedBox(
                 child:
-                Text("合計"+dantaiResult),
+                Text("合計$dantaiResult"),
               ),
             ):
-            SizedBox(),
+            const SizedBox(),
           ],
         );
 
