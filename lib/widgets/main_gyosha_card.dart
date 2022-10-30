@@ -11,6 +11,7 @@ import 'icon_asset.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:share/share.dart';
 
+
 class GyoshaMainDataExpansionTile extends ConsumerStatefulWidget{
   final String gyoshaID;
   const GyoshaMainDataExpansionTile(this.gyoshaID,{Key? key}) : super(key: key);
@@ -171,8 +172,12 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
                                SizedBox(
                                 height: constraint.maxHeight*0.15,
                                 width: constraint.maxWidth*0.6,
-                                 child: FittedBox(child: Text("$tekichuRateString% ${(totalMinutes/60).floor()}時間${totalMinutes%60}分",
-                                   style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),),
+                                 child: FittedBox(child: Text(
+                                   gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki?
+                                   "$tekichuRateString% ${(totalMinutes/60).floor()}時間${totalMinutes%60}分"
+                                   :"${gyoshaDataObj.totalTekichu}点 ${(totalMinutes/60).floor()}時間${totalMinutes%60}分",
+                                   style: TextStyle(fontSize: constraint.maxWidth*0.6/16),),
+                                 ),
                               ),
                             ],),
                       ),
@@ -223,7 +228,9 @@ class MainGyoshaCardHeaderContents extends StatelessWidget{
                       foregroundColor: Theme.of(context).colorScheme.primary,
                       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       child: FittedBox(
-                        child: Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}"),
+                        child: gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki?
+                        Text("${gyoshaDataObj.totalTekichu}/${gyoshaDataObj.totalSha}")
+                        :Text("${gyoshaDataObj.totalTekichu}"),
                       ),
                     ),
                   ),
@@ -448,11 +455,16 @@ class GyoshaDataScoreTable extends ConsumerWidget{
                   Container(
                   //padding: EdgeInsets.symmetric(horizontal: 2),
                       alignment: Alignment.center,
-                      child: Column(children: [
-                        FittedBox(child: Text("$tekichu本/$total本")),
-                        FittedBox(child: Text(rate),),
-                   ],),
-            ),
+                      child: gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki ?
+                        Column(children: [
+                          FittedBox(child: Text("$tekichu本/$total本")),
+                          FittedBox(child: Text(rate),),
+                        ]):
+                        Column(children: [
+                          FittedBox(child: Text("$tekichu点")),
+                        ])
+                          ,),
+
             ]
             )
         ],
@@ -476,19 +488,27 @@ class GyoshaDataScoreTable extends ConsumerWidget{
           viewData.add(item);
           viewData.add(const Divider());
         }
+
         String dantaiResult = "";
+
+
         if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai){
-          dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalAtariSha.toString();
-          dantaiResult += "本/";
-          dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalSha.toString();
-          dantaiResult += "本(";
-          dantaiResult+= shakaiData.totalSha==0?"-":(100*shakaiData.totalAtariSha/shakaiData.totalSha).toStringAsFixed(1);
-          dantaiResult += "%)";
+          if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki){
+            dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalAtariSha.toString();
+            dantaiResult += "本/";
+            dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalSha.toString();
+            dantaiResult += "本(";
+            dantaiResult+= shakaiData.totalSha==0?"-":(100*shakaiData.totalAtariSha/shakaiData.totalSha).toStringAsFixed(1);
+            dantaiResult += "%)";
+          }else if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.enteki){
+            dantaiResult += shakaiData.totalSha==0?"-":shakaiData.totalAtariSha.toString();
+            dantaiResult += "点";
+          }
+
         }
 
 
-        return
-        Column(
+        return Column(
           children: [
             ...viewData,
             gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai?

@@ -13,8 +13,7 @@ class LocalRecordDB extends RecordDB{
   final String dbPath;
 
   LocalRecordDB({this.dbPath = "data_db.db"}){
-
-
+    // await deleteDatabase(dbPath);
   }
 
   Future<void> deleteAll() async{
@@ -32,12 +31,8 @@ class LocalRecordDB extends RecordDB{
         _executeCreateTachiDB(db);
         _executeCreateShaDB(db);
       },
-      onUpgrade: (db,a,b){
-        db.execute("ALTER TABLE gyosha_data ADD COLUMN gyoshaEnKin INTEGER");
-        //ALTER  TABLE  テーブル名  ADD  COLUMN  カラム名  データ型  オプション;
-      },
 
-      version: 2,
+      version: 1,
     );
 
     return database;
@@ -62,7 +57,7 @@ class LocalRecordDB extends RecordDB{
           "finishDay INTEGER,"+
           "finishHour INTEGER,"+
           "finishMinute INTEGER,"+
-          "memoText TEXT"+
+          "memoText TEXT,"+
           "gyoshaEnKin INTEGER"+
           ");"
     );
@@ -202,11 +197,11 @@ class LocalRecordDB extends RecordDB{
         startDateTime,finishDateTime,
         gyoshaState: GyoshaState.values[map['gyoshaState']],
         memoText: map['memoText']??"",
-        gyoshaEnKin: map['gyoshaEnKin']==null?GyoshaEnKin.kinteki:GyoshaEnKin.values[map['gyoshaEnKin']],
+        gyoshaEnKin: map['gyoshaEnKin']!=null?GyoshaEnKin.values[map['gyoshaEnKin']] : GyoshaEnKin.kinteki,
         gyoshaID:map['gyoshaID'],
         newFlag: false,
     );
-    //print(gyoshaDataObj.gyoshaData.gyoshaEnKin);
+
     return gyoshaDataObj;
 
   }
@@ -246,6 +241,7 @@ class LocalRecordDB extends RecordDB{
         'gyosha_data',
         orderBy: 'startYear DESC, startMonth DESC, startDay DESC, startHour DESC, startMinute DESC',
     );
+    print("load maps");
     final List<GyoshaDataObj> newList = [];
 
     for(var map in maps) {
@@ -299,6 +295,7 @@ class LocalRecordDB extends RecordDB{
         }
       }
     }
+    print("load Obj");
     return newList;
   }
 

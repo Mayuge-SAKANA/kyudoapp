@@ -34,14 +34,14 @@ class GyoshaDatasNotifier extends StateNotifier<GyoshaEditManageClass>{
   );
 
 
-  void createAndAddGyoshaData( WidgetRef ref)async{
+  void createAndAddGyoshaData(WidgetRef ref,
+  {initialGyoshaName = "今日の行射", gyoshaEnKin = GyoshaEnKin.kinteki})async{
 
     RecordDB recordDB = ref.watch(recordDBProvider);
 
     DateTime startTime = DateTime.now();
-    String initialGyoshaName = "今日の行射";
     var gyoshaDataObj = GyoshaDataObj("ユーザ名",initialGyoshaName,GyoshaType.renshu,startTime,startTime,
-        recordDB: ref.read(recordDBProvider));
+        recordDB: ref.read(recordDBProvider),gyoshaEnKin: gyoshaEnKin);
     await gyoshaDataObj.addSankasha("ユーザ名",isAppUser: true, recordDB: recordDB);
 
 

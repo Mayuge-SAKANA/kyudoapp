@@ -100,6 +100,7 @@ class ScoreEditSpace extends ConsumerWidget {
       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
     }
 
+    GyoshaEnKin gyoshaEnKin = editingGyoshaData.gyoshaData.gyoshaEnKin;
 
 
     return LayoutBuilder(builder: (context, constrain){
@@ -114,7 +115,7 @@ class ScoreEditSpace extends ConsumerWidget {
         var element = SizedBox(
           width: constrain.maxWidth/5,
           height: constrain.maxWidth/5,
-          child: SelectPopUpMenuButton(shaData,_deleteItem,_setData,key: ValueKey(shaData.shaID),),
+          child: SelectPopUpMenuButton(shaData,_deleteItem,_setData,gyoshaEnKin,key: ValueKey(shaData.shaID),),
         );
 
         if((i+1)%4==1&&i>2){
@@ -147,9 +148,18 @@ class SelectPopUpMenuButton extends StatelessWidget{
   final VoidCallback _deleteItem;
   final VoidCallback _setData;
   final ShaData shaData;
-  const SelectPopUpMenuButton(this.shaData,this._deleteItem,this._setData,{Key? key}) : super(key: key);
+  final GyoshaEnKin gyoshaEnKin;
+  const SelectPopUpMenuButton(this.shaData,this._deleteItem,this._setData,this.gyoshaEnKin,{Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context){
+
+    Map<ShaResultType, Icon> gyoshaTypeMap;
+    if(gyoshaEnKin==GyoshaEnKin.kinteki){
+      gyoshaTypeMap = kintekiShaResultMap;
+    }else{
+      gyoshaTypeMap = entekiShaResultMap;
+    }
+
     return PopupMenuButton(
       color: Theme.of(context).colorScheme.primaryContainer,
       initialValue: shaData.shaResult,
@@ -163,9 +173,9 @@ class SelectPopUpMenuButton extends StatelessWidget{
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        for(int i=0; i<kintekiShaResultMap.length; i++)PopupMenuItem(
-          value: kintekiShaResultMap.keys.toList()[i] ,
-          child: kintekiShaResultMap.values.toList()[i],
+        for(int i=0; i<gyoshaTypeMap.length; i++)PopupMenuItem(
+          value: gyoshaTypeMap.keys.toList()[i] ,
+          child: gyoshaTypeMap.values.toList()[i],
         ),
       ],
       child: shaResultMap[shaData.shaResult],
@@ -182,6 +192,14 @@ class AddPopUpMenuButton extends ConsumerWidget{
     List<TachiDataObj> editingTachiList = editingGyoshaData.tachiList;
     TachiDataObj editingTachi = editingGyoshaData.tachiList[index];
     RecordDB db = ref.read(recordDBProvider);
+
+    Map<ShaResultType, Icon> gyoshaTypeMap;
+    if(editingGyoshaData.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki){
+      gyoshaTypeMap = kintekiShaResultMap;
+    }else{
+      gyoshaTypeMap = entekiShaResultMap;
+    }
+
 
     void _setData(){
       ref.read(gyoshaDatasProvider.notifier).renewGyoshaData(editingGyoshaData,ref);
@@ -214,9 +232,9 @@ class AddPopUpMenuButton extends ConsumerWidget{
 
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        for(int i=0; i<kintekiShaResultMap.length; i++)PopupMenuItem(
-          value: kintekiShaResultMap.keys.toList()[i] ,
-          child: kintekiShaResultMap.values.toList()[i],
+        for(int i=0; i<gyoshaTypeMap.length; i++)PopupMenuItem(
+          value: gyoshaTypeMap.keys.toList()[i] ,
+          child: gyoshaTypeMap.values.toList()[i],
         ),
       ],
     );

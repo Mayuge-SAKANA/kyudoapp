@@ -63,15 +63,28 @@ Map<ShaResultType, String> shaResultString = {
   ShaResultType.fumei: "？",
   ShaResultType.nashi: "－",
   ShaResultType.delete: "",
-  ShaResultType.ten: "10",
-  ShaResultType.nine: "9",
-  ShaResultType.seven: "7",
-  ShaResultType.five: "5",
-  ShaResultType.three: "3",
-  ShaResultType.zero: "0",
+  ShaResultType.ten: "10 ",
+  ShaResultType.nine: "9 ",
+  ShaResultType.seven: "7 ",
+  ShaResultType.five: "5 ",
+  ShaResultType.three: "3 ",
+  ShaResultType.zero: "0 ",
 };
 
-
+Map<ShaResultType,int> shaResultValue = {
+  ShaResultType.atari: 1,
+  ShaResultType.hazure: 0,
+  ShaResultType.shitsu: 0,
+  ShaResultType.fumei: 0,
+  ShaResultType.nashi: 0,
+  ShaResultType.delete: 0,
+  ShaResultType.ten: 10,
+  ShaResultType.nine: 9,
+  ShaResultType.seven: 7,
+  ShaResultType.five: 5,
+  ShaResultType.three: 3,
+  ShaResultType.zero: 0
+};
 
 class ShakaiResultDataObj{
   final GyoshaDataObj gyoshaDataObj;
@@ -134,10 +147,18 @@ class ShakaiResultDataObj{
       SankashaResultDataObj data = sankashaResultMap[sankashaID]!;
 
       if(gyoshaDataObj.gyoshaData.gyoshaType!=GyoshaType.dantai){
-        result+= data.totalSha>0?"${data.atariSha}本/${data.totalSha}本":"-本/-本";
-        result+= "(";
-        result+= data.totalSha>0?(100*data.atariSha/data.totalSha).toStringAsFixed(1):"-";
-        result+= "%)\n";
+        if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki) {
+          result +=
+          data.totalSha > 0 ? "${data.atariSha}本/${data.totalSha}本" : "-本/-本";
+          result += "(";
+          result += data.totalSha > 0 ? (100 * data.atariSha / data.totalSha)
+              .toStringAsFixed(1) : "-";
+          result += "%)\n";
+        }else if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.enteki){
+          result +=
+          data.totalSha > 0 ? "${data.atariSha}点" : "-点";
+          result += "\n";
+        }
       }
 
       for(var item in data.resultList){
@@ -149,14 +170,23 @@ class ShakaiResultDataObj{
     result += "*--*\n";
     if(gyoshaDataObj.gyoshaData.gyoshaType==GyoshaType.dantai){
       String dantaiResult = "合計";
-      dantaiResult += totalSha==0?"-":totalAtariSha.toString();
-      dantaiResult += "本/";
-      dantaiResult += totalSha==0?"-":totalSha.toString();
-      dantaiResult += "本(";
-      dantaiResult+= totalSha==0?"-":(100*totalAtariSha/totalSha).toStringAsFixed(1);
-      dantaiResult += ")";
+      if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.kinteki) {
+        dantaiResult += totalSha == 0 ? "-" : totalAtariSha.toString();
+        dantaiResult += "本/";
+        dantaiResult += totalSha == 0 ? "-" : totalSha.toString();
+        dantaiResult += "本(";
+        dantaiResult +=
+        totalSha == 0 ? "-" : (100 * totalAtariSha / totalSha).toStringAsFixed(
+            1);
+        dantaiResult += ")";
+
+      }else if(gyoshaDataObj.gyoshaData.gyoshaEnKin==GyoshaEnKin.enteki){
+        dantaiResult += totalSha==0?"-":totalAtariSha.toString();
+        dantaiResult += "点";
+      }
       result += dantaiResult;
-      result += "%\n";
+      result += "\n";
+
     }
 
     result += gyoshaDataObj.gyoshaData.memoText==null?"":gyoshaDataObj.gyoshaData.memoText!;

@@ -38,7 +38,10 @@ class TachiDataObj {
   }
 
   int countAtariSha(){
-    return shaList.where((element) => element.shaResult==ShaResultType.atari).length;
+    int sum = shaList.fold(0, (prev, element) {
+      return prev+shaResultValue[element.shaResult]!;
+    });
+    return sum;
   }
 
   Future<void> removeShaAt(String shaID,{RecordDB? db})async{

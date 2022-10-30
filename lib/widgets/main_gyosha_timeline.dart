@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kyodoapp/data/data_define.dart';
 import '../main.dart';
 import '../data/control_data.dart';
 import '../data/data_gyosha_object.dart';
@@ -15,11 +16,44 @@ class MainView extends ConsumerWidget {
 
     List<GyoshaDataObj> gyoshaDataList = gyoshaEditManage.gyoshaDataList;
     var scrollController = ScrollController();
-
     void _createNewGyoshaData(){
-
       ref.read(gyoshaDatasProvider.notifier).createAndAddGyoshaData(ref);
+    }
 
+
+    void myShowModalBottomSheetSelectEnKin(BuildContext context){
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('新規作成'),
+            content: const Text("データを作成します"),
+
+            actions: <Widget>[
+
+              ElevatedButton(
+                child: const Text('遠的'),
+                onPressed: () {
+                  ref.read(gyoshaDatasProvider.notifier)
+                      .createAndAddGyoshaData(
+                      ref, gyoshaEnKin: GyoshaEnKin.enteki);
+
+
+                  Navigator.pop(context);
+                },
+              ),
+              ElevatedButton(
+                child: const Text('近的'),
+                onPressed: () {
+                  ref.read(gyoshaDatasProvider.notifier).createAndAddGyoshaData(ref);
+                  Navigator.pop(context);
+                  //OKを押したあとの処理
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
 
     return Scaffold(
@@ -44,12 +78,23 @@ class MainView extends ConsumerWidget {
         }
       ),
 
-      floatingActionButton: GyoshaViewFloatingActionButton(_createNewGyoshaData,scrollController),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          myShowModalBottomSheetSelectEnKin(context);
+          scrollController.animateTo(
+            scrollController.position.minScrollExtent,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.linear,
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      //GyoshaViewFloatingActionButton(_createNewGyoshaData,scrollController),
       drawer: const DrawerMenu(),
     );
   }
 }
-
+/*
 @immutable
 class GyoshaViewFloatingActionButton extends StatelessWidget{
   final VoidCallback createNewGyoshaData;
@@ -70,6 +115,8 @@ class GyoshaViewFloatingActionButton extends StatelessWidget{
     );
   }
 }
+
+ */
 
 class DrawerMenu extends StatelessWidget {
   const DrawerMenu({Key? key}) : super(key: key);

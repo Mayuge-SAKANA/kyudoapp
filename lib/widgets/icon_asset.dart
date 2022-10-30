@@ -11,15 +11,12 @@ Map<ShaResultType, Icon> shaResultMap = {
   ShaResultType.nashi: const Icon(Icons.minimize),
   ShaResultType.delete: const Icon(Icons.delete),
 
-
-  ShaResultType.ten: const Icon(EntekiNumbers.num_ten),
-  ShaResultType.nine: const Icon(EntekiNumbers.num_nine),
-  ShaResultType.seven: const Icon(EntekiNumbers.num_seven),
-  ShaResultType.five: const Icon(EntekiNumbers.num_five),
-  ShaResultType.three: const Icon(EntekiNumbers.num_three),
   ShaResultType.zero: const Icon(EntekiNumbers.num_zero),
-
-
+  ShaResultType.three: const Icon(EntekiNumbers.num_three),
+  ShaResultType.five: const Icon(EntekiNumbers.num_five),
+  ShaResultType.seven: const Icon(EntekiNumbers.num_seven),
+  ShaResultType.nine: const Icon(EntekiNumbers.num_nine),
+  ShaResultType.ten: const Icon(EntekiNumbers.num_ten),
 
 };
 
@@ -33,16 +30,13 @@ Map<ShaResultType, Icon> kintekiShaResultMap = {
 };
 
 Map<ShaResultType, Icon> entekiShaResultMap = {
-  ShaResultType.ten: const Icon(EntekiNumbers.num_ten),
-  ShaResultType.nine: const Icon(EntekiNumbers.num_nine),
-  ShaResultType.seven: const Icon(EntekiNumbers.num_seven),
-  ShaResultType.five: const Icon(EntekiNumbers.num_five),
-  ShaResultType.three: const Icon(EntekiNumbers.num_three),
   ShaResultType.zero: const Icon(EntekiNumbers.num_zero),
-  ShaResultType.delete: const Icon(Icons.delete),
+  ShaResultType.three: const Icon(EntekiNumbers.num_three),
+  ShaResultType.five: const Icon(EntekiNumbers.num_five),
+  ShaResultType.seven: const Icon(EntekiNumbers.num_seven),
+  ShaResultType.nine: const Icon(EntekiNumbers.num_nine),
+  ShaResultType.ten: const Icon(EntekiNumbers.num_ten),
 };
-
-
 
 Map<GyoshaType, String> gyoshaTypeString = {
   GyoshaType.renshu:"練習",
